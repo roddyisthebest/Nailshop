@@ -14,11 +14,15 @@ const Root = () => {
     isLoggedIn: state.isLoggedIn,
   }));
   return (
-    <Nav.Navigator screenOptions={{presentation: 'modal', headerShown: false}}>
+    <Nav.Navigator
+      screenOptions={{
+        presentation: 'modal',
+        headerShown: false,
+      }}>
       {isLoggedIn ? (
         <>
           <Nav.Screen name="Tabs" component={Tabs}></Nav.Screen>
-          <Nav.Screen name="Stack" component={Stack}></Nav.Screen>
+          <Nav.Screen name="Stacks" component={Stack}></Nav.Screen>
         </>
       ) : (
         <Nav.Screen name="Auth" component={Auth}></Nav.Screen>

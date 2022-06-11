@@ -16,11 +16,20 @@ const Tabs = () => (
         fontWeight: '600',
         display: 'none',
       },
+      headerStyle: {
+        borderBottomColor: '#E8E8E8',
+        borderBottomWidth: 1,
+      },
+      headerTitleStyle: {
+        fontWeight: '700',
+      },
+      headerShadowVisible: true,
     }}>
     <Tab.Screen
       name="Home"
       component={Home}
       options={{
+        title: '홈',
         tabBarIcon: ({color, size}) => (
           <Icon
             name={color === '#8E8E8F' ? 'home-outline' : 'home'}
@@ -34,6 +43,7 @@ const Tabs = () => (
       name="Rank"
       component={Rank}
       options={{
+        title: '랭킹',
         tabBarIcon: ({color, size}) => (
           <Icon
             name={color === '#8E8E8F' ? 'medal-outline' : 'medal'}
@@ -47,6 +57,7 @@ const Tabs = () => (
       name="MyInfo"
       component={MyInfo}
       options={{
+        title: '내 정보',
         tabBarIcon: ({color, size}) => (
           <Icon
             name={

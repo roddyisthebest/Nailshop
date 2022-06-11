@@ -12,8 +12,15 @@ const Stack = () => (
   <NativeStack.Navigator
     screenOptions={{
       headerBackTitleVisible: false,
+      headerTitleStyle: {
+        fontWeight: '700',
+      },
     }}>
-    <NativeStack.Screen name="Detail" component={Detail} />
+    <NativeStack.Screen
+      name="Detail"
+      component={Detail}
+      options={{title: '가게 세부정보'}}
+    />
     <NativeStack.Screen name="Edit" component={Edit} />
     <NativeStack.Screen name="MyStore" component={MyStore} />
     <NativeStack.Screen name="MyStyle" component={MyStyle} />
