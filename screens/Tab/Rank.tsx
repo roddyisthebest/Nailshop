@@ -51,7 +51,7 @@ const Rank = () => {
   }, []);
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
-      <View style={{paddingVertical: 13, paddingHorizontal: 20}}>
+      <View style={{paddingVertical: 13, paddingHorizontal: 15}}>
         <SearchBar></SearchBar>
       </View>
       {data.length !== 0 ? (
@@ -63,7 +63,7 @@ const Rank = () => {
           onEndReached={_getData}
           refreshing={refreshing}
           onRefresh={_handleRefresh}
-          contentContainerStyle={{paddingHorizontal: 20}}
+          contentContainerStyle={{paddingHorizontal: 15}}
         />
       ) : (
         <View style={{flex: 1, alignItems: 'center', marginTop: 30}}>

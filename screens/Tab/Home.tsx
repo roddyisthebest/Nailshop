@@ -76,7 +76,7 @@ const Home = ({navigation: {navigate}}: {navigation: {navigate: Function}}) => {
         }}>
         <Text>Go stack</Text>
       </Pressable> */}
-      <View style={{paddingVertical: 13, paddingHorizontal: 20}}>
+      <View style={{paddingVertical: 13, paddingHorizontal: 15}}>
         <SearchBar></SearchBar>
       </View>
       {data.length !== 0 ? (
