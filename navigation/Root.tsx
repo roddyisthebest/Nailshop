@@ -9,6 +9,17 @@ import {initialStateProps} from '../store/slice';
 
 const Nav = createNativeStackNavigator();
 
+export type LoggedInParamList = {
+  Stacks: {
+    screen: string;
+    params: {idx: number};
+  };
+  Tabs: {
+    screen: string;
+    params: any;
+  };
+};
+
 const Root = () => {
   const {isLoggedIn} = useSelector((state: initialStateProps) => ({
     isLoggedIn: state.isLoggedIn,

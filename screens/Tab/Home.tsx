@@ -1,17 +1,18 @@
 import {
   Text,
   View,
-  Pressable,
   StyleSheet,
-  StatusBar,
   SafeAreaView,
   FlatList,
   Dimensions,
   Image,
+  TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
-
+import SearchBar from '../../components/SearchBar';
+import StoreBox from '../../components/StoreBox';
 type dateType = {
   albumId: number;
   id: number;
@@ -20,39 +21,18 @@ type dateType = {
   url: string;
 };
 
-const Item = ({
-  isItCenter,
-  isItLeft,
-  isItRight,
-  uri,
-}: {
-  isItCenter: boolean;
-  isItLeft: boolean;
-  isItRight: boolean;
-  uri: string;
-}) => (
-  <Image
-    style={{
-      backgroundColor: '#EEEFEF',
-      marginRight: isItCenter || isItLeft ? 0.5 : 0,
-      marginLeft: isItCenter || isItRight ? 0.5 : 0,
-      height: Dimensions.get('window').width / 3,
-      flex: 1 / 3,
-    }}
-    source={{
-      uri,
-    }}></Image>
-);
 const Home = ({navigation: {navigate}}: {navigation: {navigate: Function}}) => {
   const [data, setData] = useState<dateType[]>([]);
   const [page, setPage] = useState<number>(0);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+
   const renderItem = ({item, index}: {item: dateType; index: number}) => (
-    <Item
+    <StoreBox
       isItCenter={index % 3 === 1}
       isItLeft={index % 3 === 0}
       isItRight={index % 3 === 2}
       uri={item.url}
+      idx={index}
     />
   );
 
@@ -96,6 +76,9 @@ const Home = ({navigation: {navigate}}: {navigation: {navigate: Function}}) => {
         }}>
         <Text>Go stack</Text>
       </Pressable> */}
+      <View style={{paddingVertical: 13, paddingHorizontal: 20}}>
+        <SearchBar></SearchBar>
+      </View>
       {data.length !== 0 ? (
         <SafeAreaView style={styles.container}>
           <FlatList
@@ -110,7 +93,9 @@ const Home = ({navigation: {navigate}}: {navigation: {navigate: Function}}) => {
           />
         </SafeAreaView>
       ) : (
-        <Text>Loading</Text>
+        <View style={{flex: 1, alignItems: 'center', marginTop: 30}}>
+          <ActivityIndicator color="black" size={50} />
+        </View>
       )}
     </View>
   );
@@ -119,13 +104,6 @@ const Home = ({navigation: {navigate}}: {navigation: {navigate: Function}}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  item: {
-    backgroundColor: '#EEEFEF',
-    marginVertical: 1.5,
-    // width: Dimensions.get('window').width / 3.05,
-    height: Dimensions.get('window').width / 3,
-    flex: 1 / 3,
   },
   title: {
     fontSize: 32,
