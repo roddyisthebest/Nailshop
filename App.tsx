@@ -2,11 +2,16 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import Root from './navigation/Root';
 
+import {Provider} from 'react-redux';
+import store from './store';
+
 const App = () => {
   return (
-    <NavigationContainer>
-      <Root />
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <Root />
+      </NavigationContainer>
+    </Provider>
   );
 };
 

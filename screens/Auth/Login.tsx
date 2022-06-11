@@ -2,6 +2,8 @@ import {Text, View, Dimensions} from 'react-native';
 import React from 'react';
 import styled from 'styled-components/native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {useDispatch} from 'react-redux';
+import {login} from '../../store/slice';
 
 const Container = styled.View`
   flex: 1;
@@ -41,6 +43,12 @@ const ButtonText = styled.Text<{color: string}>`
   color: ${props => props.color};
 `;
 const Login = () => {
+  const dispatch = useDispatch();
+
+  const signIn = () => {
+    dispatch(login(true));
+  };
+
   return (
     <Container>
       <LogoImage
@@ -53,7 +61,8 @@ const Login = () => {
       <View>
         <Button
           backColor="#D15442"
-          style={{width: Dimensions.get('window').width / 1.5}}>
+          style={{width: Dimensions.get('window').width / 1.5}}
+          onPress={signIn}>
           <ButtonLogoWrapper>
             <Icon name="logo-google" size={20} color="white" />
           </ButtonLogoWrapper>
