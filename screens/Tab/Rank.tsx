@@ -1,4 +1,10 @@
-import {FlatList, Text, View, ActivityIndicator} from 'react-native';
+import {
+  FlatList,
+  Text,
+  View,
+  ActivityIndicator,
+  Dimensions,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import SearchBar from '../../components/SearchBar';
 import RankColumn from '../../components/RankColumn';
@@ -12,7 +18,11 @@ type dateType = {
   url: string;
 };
 
-const Rank = () => {
+const Rank = ({
+  navigation: {setOptions},
+}: {
+  navigation: {setOptions: Function};
+}) => {
   const [data, setData] = useState<dateType[]>([]);
   const [page, setPage] = useState<number>(0);
   const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -48,12 +58,17 @@ const Rank = () => {
 
   useEffect(() => {
     _getData();
+    setOptions({
+      headerTitle: () => (
+        <View style={{paddingHorizontal: 0}}>
+          <SearchBar width={Dimensions.get('window').width - 30}></SearchBar>
+        </View>
+      ),
+      title: '',
+    });
   }, []);
   return (
-    <View style={{flex: 1, backgroundColor: 'white'}}>
-      <View style={{paddingVertical: 13, paddingHorizontal: 15}}>
-        <SearchBar></SearchBar>
-      </View>
+    <View style={{flex: 1, backgroundColor: 'white', paddingVertical: 15}}>
       {data.length !== 0 ? (
         <FlatList
           data={data}

@@ -1,13 +1,11 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {Text, Pressable} from 'react-native';
 
 const Container = styled.View`
   background-color: #eeefef;
   padding: 10px 15px;
-  width: 100%;
-  height: 45px;
+  height: 38px;
   border-radius: 10px;
   display: flex;
   justify-content: center;
@@ -17,6 +15,7 @@ const Container = styled.View`
 const Input = styled.TextInput`
   flex: 1;
   padding: 0;
+  font-size: 13px;
 `;
 
 const Button = styled.TouchableOpacity`
@@ -24,14 +23,18 @@ const Button = styled.TouchableOpacity`
   justify-content: center;
 `;
 
-const SearchBar = () => {
+const SearchBar = ({width}: {width: number}) => {
+  const onSubmit = () => {};
+
   return (
-    <Container>
+    <Container style={{width}}>
       <Button>
-        <Icon name="search" size={15} color="#767677"></Icon>
+        <Icon name="search" size={13} color="#767677"></Icon>
       </Button>
-      <Input placeholder="검색"></Input>
-      <Input></Input>
+      <Input
+        placeholder="검색"
+        returnKeyType="search"
+        onSubmitEditing={onSubmit}></Input>
     </Container>
   );
 };

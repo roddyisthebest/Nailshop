@@ -21,7 +21,11 @@ type dateType = {
   url: string;
 };
 
-const Home = ({navigation: {navigate}}: {navigation: {navigate: Function}}) => {
+const Home = ({
+  navigation: {navigate, setOptions},
+}: {
+  navigation: {navigate: Function; setOptions: Function};
+}) => {
   const [data, setData] = useState<dateType[]>([]);
   const [page, setPage] = useState<number>(0);
   const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -65,6 +69,14 @@ const Home = ({navigation: {navigate}}: {navigation: {navigate: Function}}) => {
 
   useEffect(() => {
     _getData();
+    setOptions({
+      headerTitle: () => (
+        <View style={{paddingHorizontal: 0}}>
+          <SearchBar width={Dimensions.get('window').width - 30}></SearchBar>
+        </View>
+      ),
+      title: '',
+    });
   }, []);
 
   return (
@@ -76,9 +88,7 @@ const Home = ({navigation: {navigate}}: {navigation: {navigate: Function}}) => {
         }}>
         <Text>Go stack</Text>
       </Pressable> */}
-      <View style={{paddingVertical: 13, paddingHorizontal: 15}}>
-        <SearchBar></SearchBar>
-      </View>
+
       {data.length !== 0 ? (
         <SafeAreaView style={styles.container}>
           <FlatList
