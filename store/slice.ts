@@ -3,6 +3,7 @@ import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 export type initialStateProps = {
   userInfo: {
     name: string;
+    jwt: string;
   };
   isLoggedIn: boolean;
 };

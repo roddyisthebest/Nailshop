@@ -1,5 +1,5 @@
-import {Text, View, Dimensions} from 'react-native';
-import React from 'react';
+import {Text, View, Dimensions, Linking, Alert} from 'react-native';
+import React, {useCallback} from 'react';
 import styled from 'styled-components/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useDispatch} from 'react-redux';
@@ -42,13 +42,49 @@ const ButtonText = styled.Text<{color: string}>`
   font-weight: 500;
   color: ${props => props.color};
 `;
-const Login = () => {
+const Login = ({
+  navigation: {navigate},
+}: {
+  navigation: {navigate: Function};
+}) => {
   const dispatch = useDispatch();
 
   const signIn = () => {
     dispatch(login(true));
   };
 
+  // function OpenURLButton({url, children}: {url: string; children: string}) {
+  //   const handlePress = useCallback(async () => {
+  //     // Checking if the link is supported for links with custom URL scheme.
+  //     const supported = await Linking.canOpenURL(url);
+  //     await Linking.openURL(url);
+  //     if (supported) {
+  //       // Opening the link with some app, if the URL scheme is "http" the web link should be opened
+  //       // by some browser in the mobile
+  //       await Linking.openURL(url);
+  //     } else {
+  //       Alert.alert(`Don't know how to open this URL: ${url}`);
+  //     }
+  //   }, [url]);
+
+  //   return (
+  //     <Button
+  //       backColor="#FBE950"
+  //       onPress={handlePress}
+  //       style={{width: Dimensions.get('window').width / 1.5}}>
+  //       <ButtonLogoWrapper>
+  //         <LogoImage
+  //           width={26}
+  //           height={26}
+  //           source={require('../../assets/img/KakaoTalk_logo.png')}
+  //         />
+  //       </ButtonLogoWrapper>
+  //       <ButtonNameWrapper>
+  //         <ButtonText color="#372929">{children}</ButtonText>
+  //       </ButtonNameWrapper>
+  //     </Button>
+  //   );
+  // }
   return (
     <Container>
       <LogoImage
@@ -82,7 +118,15 @@ const Login = () => {
         </Button>
         <Button
           backColor="#FBE950"
-          style={{width: Dimensions.get('window').width / 1.5}}>
+          style={{width: Dimensions.get('window').width / 1.5}}
+          onPress={() => {
+            navigate('Auth', {
+              screen: 'SnsLogin',
+              params: {
+                url: 'https://kauth.kakao.com/oauth/authorize?client_id=156355b45fae0e4d87fb007e4d5d3ef7&redirect_uri=https://junggam.click/api/v1/oauth/kakao&response_type=code',
+              },
+            });
+          }}>
           <ButtonLogoWrapper>
             <LogoImage
               width={26}

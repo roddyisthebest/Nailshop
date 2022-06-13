@@ -30,7 +30,7 @@ const StoreBox = ({
         navigation.navigate('Stacks', {screen: 'Detail', params: {idx}});
       }}>
       <Image
-        style={{width: '100%', height: '100%'}}
+        style={{width: '100%', height: '100%', backgroundColor: '#eeefef'}}
         source={{
           uri,
         }}></Image>

@@ -13,6 +13,9 @@ import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import SearchBar from '../../components/SearchBar';
 import StoreBox from '../../components/StoreBox';
+import {getMyInfo} from '../../api/user';
+import {getShopList} from '../../api/shop';
+import {Shop} from '../../types/index';
 type dateType = {
   albumId: number;
   id: number;
@@ -26,26 +29,36 @@ const Home = ({
 }: {
   navigation: {navigate: Function; setOptions: Function};
 }) => {
-  const [data, setData] = useState<dateType[]>([]);
+  const [data, setData] = useState<Shop[]>([]);
   const [page, setPage] = useState<number>(0);
+  const [lastPage, setLastPage] = useState<number>(0);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [disabled, setDisabled] = useState(false);
 
-  const renderItem = ({item, index}: {item: dateType; index: number}) => (
+  const renderItem = ({item, index}: {item: Shop; index: number}) => (
     <StoreBox
       isItCenter={index % 3 === 1}
       isItLeft={index % 3 === 0}
       isItRight={index % 3 === 2}
-      uri={item.url}
+      uri={`https://junggam.click/api/v1/shops/mainImage/${item.shopMainImage.name}`}
       idx={index}
     />
   );
 
-  const _getData = async () => {
+  const getData = async (isItFirst: boolean) => {
     try {
-      const {data: imageData} = await axios.get(
-        `https://jsonplaceholder.typicode.com/photos?_limit=13?_page=${page}`,
-      );
-      setData(data.concat(imageData));
+      if (!isItFirst && lastPage === page) {
+        return;
+      }
+      const {data: shopData} = await getShopList(page);
+      if (isItFirst) {
+        setLastPage(shopData.total_page);
+      }
+      setData(data.concat(shopData.data.contents));
+      if (page === shopData.total_page) {
+        setDisabled(true);
+        return;
+      }
       setPage(page + 1);
     } catch (e) {
       console.log(e);
@@ -56,19 +69,26 @@ const Home = ({
     try {
       setRefreshing(true);
       setPage(0);
-      const {data: imageData} = await axios.get(
-        `https://jsonplaceholder.typicode.com/photos?_limit=13?_page=${page}`,
-      );
-      setData(imageData);
+      const {data: shopData} = await getShopList(page);
+      setData(shopData.data.contents);
     } catch (e) {
       console.log(e);
     } finally {
       setRefreshing(false);
     }
   };
+  const get = async () => {
+    try {
+      const {data} = await getMyInfo();
+      console.log(data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   useEffect(() => {
-    _getData();
+    // _getData();
+    getData(true);
     setOptions({
       headerTitle: () => (
         <View style={{paddingHorizontal: 0}}>
@@ -77,6 +97,7 @@ const Home = ({
       ),
       title: '',
     });
+    get();
   }, []);
 
   return (
@@ -97,7 +118,11 @@ const Home = ({
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
             numColumns={3}
-            onEndReached={_getData}
+            onEndReached={() => {
+              if (!disabled) {
+                getData(false);
+              }
+            }}
             refreshing={refreshing}
             onRefresh={_handleRefresh}
           />

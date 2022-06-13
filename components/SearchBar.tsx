@@ -18,7 +18,7 @@ const Input = styled.TextInput`
   font-size: 13px;
 `;
 
-const Button = styled.TouchableOpacity`
+const Button = styled.Pressable`
   margin-right: 10px;
   justify-content: center;
 `;

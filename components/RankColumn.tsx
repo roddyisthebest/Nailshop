@@ -47,10 +47,12 @@ const RankColumn = ({
   uri,
   rank,
   idx,
+  likes,
 }: {
   uri: string;
   rank: number;
   idx: number;
+  likes: number;
 }) => {
   const navigation = useNavigation<NavigationProp<LoggedInParamList>>();
 
@@ -65,7 +67,7 @@ const RankColumn = ({
       <StoreImage source={{uri}} />
       <LoveWrapper>
         <Icon name="heart" size={20} color={'#ff0000'} />
-        <LoveText>900</LoveText>
+        <LoveText>{likes}</LoveText>
       </LoveWrapper>
     </Container>
   );
