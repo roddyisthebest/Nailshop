@@ -6,6 +6,7 @@ import {
   FlatList,
   SafeAreaView,
   ActivityIndicator,
+  Linking,
 } from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import styled from 'styled-components/native';
@@ -132,6 +133,7 @@ const Detail = ({
 }) => {
   const [like, setLike] = useState<boolean>(false);
   const [data, setData] = useState<Shop>();
+  const [phone, setPhone] = useState<string>();
   const [likeLoading, setLikeLoading] = useState<boolean>(false);
   // const getImage = useCallback(async () => {
   //   try {
@@ -192,6 +194,11 @@ const Detail = ({
   useEffect(() => {
     if (data) {
       setLike(data.liked);
+      if (data.phone) {
+        const editedPhone = data.phone.replace(/-/gi, '');
+        console.log(editedPhone);
+        setPhone(editedPhone);
+      }
     }
   }, [data]);
 
@@ -357,13 +364,27 @@ const Detail = ({
               alignItems: 'center',
               justifyContent: 'space-around',
             }}>
-            <ContactButton>
-              <Icon name="call" size={20} color="black" />
-            </ContactButton>
-            <ContactButton>
-              <Icon name="chatbubble-ellipses" size={20} color="black" />
-            </ContactButton>
-            <ContactButton>
+            {phone ? (
+              <>
+                <ContactButton
+                  onPress={() => {
+                    Linking.openURL(`tel:${phone}`);
+                  }}>
+                  <Icon name="call" size={20} color="black" />
+                </ContactButton>
+                <ContactButton
+                  onPress={() => {
+                    Linking.openURL(`sms:${phone}`);
+                  }}>
+                  <Icon name="chatbubble-ellipses" size={20} color="black" />
+                </ContactButton>
+              </>
+            ) : null}
+
+            <ContactButton
+              onPress={() => {
+                Linking.openURL(`https://open.kakao.com/o/sP3g8xLd`);
+              }}>
               <Image
                 style={{width: '50%', height: '50%'}}
                 source={require('../../assets/img/kakao_logo.png')}></Image>
