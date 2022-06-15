@@ -5,12 +5,15 @@ import {
   Image,
   FlatList,
   SafeAreaView,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import styled from 'styled-components/native';
 import DropShadow from 'react-native-drop-shadow';
 import Icon from 'react-native-vector-icons/Ionicons';
 import NaverMapView, {Marker} from 'react-native-nmap';
+import {Shop} from '../../types';
+import {getShopByIdx, postLikeByIdx, deleteLikeByIdx} from '../../api/shop';
 
 const Container = styled.ScrollView`
   flex: 1;
@@ -127,7 +130,8 @@ const Detail = ({
 }: {
   route: {params: {idx: number}};
 }) => {
-  const [love, setLove] = useState<boolean>(false);
+  const [like, setLike] = useState<boolean>(false);
+  const [data, setData] = useState<Shop>();
   // const getImage = useCallback(async () => {
   //   try {
   //     const {data} =await axios.get(
@@ -138,6 +142,15 @@ const Detail = ({
   //     console.log(e);
   //   }
   // }, []);
+
+  const getData = async () => {
+    try {
+      const {data: DetailData} = await getShopByIdx(idx);
+      setData(DetailData.data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const testMenuData = [
     {uri: '', id: 1},
@@ -151,9 +164,34 @@ const Detail = ({
   ];
 
   const renderItem = ({item}: {item: any}) => <MenuImage />;
-  useEffect(() => {}, []);
 
-  return (
+  const toggleLike = async () => {
+    try {
+      if (!like) {
+        const {data} = await postLikeByIdx(idx);
+        console.log(data);
+        setLike(true);
+      } else {
+        const {data} = await deleteLikeByIdx(idx);
+        console.log(data);
+        setLike(false);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  useEffect(() => {
+    if (data) {
+      setLike(data.liked);
+    }
+  }, [data]);
+
+  return data ? (
     <Container>
       <DetailImage
         height={Dimensions.get('window').height / 4}
@@ -170,19 +208,17 @@ const Detail = ({
           }}>
           <DetailTitleWrapper>
             <DetailTitle>
-              <DetailTitleText>상명 내일</DetailTitleText>
+              <DetailTitleText>{data.name}</DetailTitleText>
               <LoveButton
-                backgroundColor={love ? 'white' : 'red'}
-                onPress={() => {
-                  setLove(!love);
-                }}>
+                backgroundColor={like ? 'white' : 'red'}
+                onPress={toggleLike}>
                 <Icon
                   name={'heart'}
                   size={8}
-                  color={love ? 'black' : 'white'}
+                  color={like ? 'black' : 'white'}
                 />
-                <LoveButtonText color={love ? 'black' : 'white'}>
-                  {love ? '찜 해제' : '찜하기'}
+                <LoveButtonText color={like ? 'black' : 'white'}>
+                  {like ? '찜 해제' : '찜하기'}
                 </LoveButtonText>
               </LoveButton>
               <ShareButton>
@@ -192,19 +228,23 @@ const Detail = ({
             <Information style={{marginBottom: 5}}>
               <Icon name={'navigate'} size={15} color="black" />
               <Text style={{fontSize: 10, color: 'black', marginLeft: 10}}>
-                충청남도 천안시 동남구 상명대길 300
+                {data.address}
               </Text>
             </Information>
             <Information style={{marginBottom: 5}}>
               <Icon name={'time-outline'} size={15} color="black" />
               <Text style={{fontSize: 10, color: 'black', marginLeft: 10}}>
-                10:00 - 20:00
+                {data.businessHours
+                  ? data.businessHours?.toString().includes('영업시간')
+                    ? data.businessHours.toString().substring(5)
+                    : data.businessHours
+                  : '데이터가 없습니다.'}
               </Text>
             </Information>
             <Information>
               <Icon name={'call-outline'} size={15} color="black" />
               <Text style={{fontSize: 10, color: 'black', marginLeft: 10}}>
-                010-5152-9445
+                {data.phone ? data.phone : '데이터가 없습니다.'}
               </Text>
             </Information>
           </DetailTitleWrapper>
@@ -318,6 +358,10 @@ const Detail = ({
         </Section>
       </DetailContent>
     </Container>
+  ) : (
+    <View style={{flex: 1, alignItems: 'center', marginTop: 30}}>
+      <ActivityIndicator color="black" size={50} />
+    </View>
   );
 };
 

@@ -31,7 +31,7 @@ const Home = ({
 }) => {
   const [data, setData] = useState<Shop[]>([]);
   const [page, setPage] = useState<number>(0);
-  const [lastPage, setLastPage] = useState<number>(0);
+  const [lastPage, setLastPage] = useState<number>();
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [disabled, setDisabled] = useState(false);
 
@@ -41,50 +41,53 @@ const Home = ({
       isItLeft={index % 3 === 0}
       isItRight={index % 3 === 2}
       uri={`https://junggam.click/api/v1/shops/mainImage/${item.shopMainImage.name}`}
-      idx={index}
+      idx={item.idx}
     />
   );
 
   const getData = async (isItFirst: boolean) => {
-    try {
-      if (!isItFirst && lastPage === page) {
-        return;
+    if (!disabled) {
+      try {
+        const {data: shopData} = await getShopList(page);
+        if (isItFirst) {
+          setLastPage(shopData.data.total_page);
+        }
+        setData(data.concat(shopData.data.contents));
+        setPage(page => page + 1);
+      } catch (e) {
+        console.log(e);
       }
-      const {data: shopData} = await getShopList(page);
-      if (isItFirst) {
-        setLastPage(shopData.total_page);
-      }
-      setData(data.concat(shopData.data.contents));
-      if (page === shopData.total_page) {
-        setDisabled(true);
-        return;
-      }
-      setPage(page + 1);
-    } catch (e) {
-      console.log(e);
     }
   };
+
+  useEffect(() => {
+    if (lastPage && lastPage < page) {
+      setDisabled(true);
+    }
+  }, [lastPage, page]);
 
   const _handleRefresh = async () => {
     try {
       setRefreshing(true);
       setPage(0);
-      const {data: shopData} = await getShopList(page);
+      const {data: shopData} = await getShopList(0);
       setData(shopData.data.contents);
     } catch (e) {
       console.log(e);
     } finally {
       setRefreshing(false);
+      setDisabled(false);
+      setPage(page => page + 1);
     }
   };
-  const get = async () => {
-    try {
-      const {data} = await getMyInfo();
-      console.log(data);
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  // const get = async () => {
+  //   try {
+  //     const {data} = await getMyInfo();
+  //     console.log(data);
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // };
 
   useEffect(() => {
     // _getData();
@@ -97,7 +100,7 @@ const Home = ({
       ),
       title: '',
     });
-    get();
+    // get();
   }, []);
 
   return (
@@ -119,9 +122,7 @@ const Home = ({
             keyExtractor={(item, index) => index.toString()}
             numColumns={3}
             onEndReached={() => {
-              if (!disabled) {
-                getData(false);
-              }
+              getData(false);
             }}
             refreshing={refreshing}
             onRefresh={_handleRefresh}

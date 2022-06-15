@@ -17,8 +17,19 @@ export type Shop = {
     uploadPath: string;
     extension: '.png' | '.jpeg';
   };
-  tags: null;
-  styles: null;
+  tags:
+    | {
+        idx: number;
+        name: string;
+      }[]
+    | null;
+  styles:
+    | {
+        idx: number;
+        name: string;
+        images: [];
+      }[]
+    | null;
   images: null;
   liked: boolean;
   likes: number;

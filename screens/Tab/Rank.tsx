@@ -27,7 +27,7 @@ const Rank = ({
 }) => {
   const [data, setData] = useState<Shop[]>([]);
   const [page, setPage] = useState<number>(0);
-  const [lastPage, setLastPage] = useState<number>(0);
+  const [lastPage, setLastPage] = useState<number>();
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [disabled, setDisabled] = useState(false);
   const renderItem = ({item, index}: {item: Shop; index: number}) => (
@@ -49,26 +49,26 @@ const Rank = ({
   //   }
   // };
   const getData = async (isItFirst: boolean) => {
-    try {
-      if (!isItFirst && lastPage === page) {
-        return;
+    if (!disabled) {
+      try {
+        const {data: shopData} = await getShopRanking(page);
+        if (isItFirst) {
+          setLastPage(shopData.data.total_page);
+        }
+        setData(data.concat(shopData.data.contents));
+        setPage(page => page + 1);
+      } catch (e) {
+        console.log(e);
       }
-      const {data: shopData} = await getShopRanking(page);
-      if (isItFirst) {
-        setLastPage(shopData.total_page);
-      }
-      setData(data.concat(shopData.data.contents));
-      if (page === shopData.total_page) {
-        setDisabled(true);
-        return;
-      }
-      setPage(page + 1);
-    } catch (e) {
-      console.log(e);
     }
   };
 
-  // console.log(page, lastPage);
+  useEffect(() => {
+    if (lastPage && lastPage < page) {
+      setDisabled(true);
+    }
+  }, [lastPage, page]);
+
   const _handleRefresh = async () => {
     try {
       setRefreshing(true);
@@ -79,6 +79,8 @@ const Rank = ({
       console.log(e);
     } finally {
       setRefreshing(false);
+      setDisabled(false);
+      setPage(page => page + 1);
     }
   };
 
@@ -102,9 +104,7 @@ const Rank = ({
           renderItem={renderItem}
           keyExtractor={(item, index) => index.toString()}
           onEndReached={() => {
-            if (!disabled) {
-              getData(false);
-            }
+            getData(false);
           }}
           refreshing={refreshing}
           onRefresh={_handleRefresh}
