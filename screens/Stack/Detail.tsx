@@ -132,6 +132,7 @@ const Detail = ({
 }) => {
   const [like, setLike] = useState<boolean>(false);
   const [data, setData] = useState<Shop>();
+  const [likeLoading, setLikeLoading] = useState<boolean>(false);
   // const getImage = useCallback(async () => {
   //   try {
   //     const {data} =await axios.get(
@@ -167,6 +168,7 @@ const Detail = ({
 
   const toggleLike = async () => {
     try {
+      setLikeLoading(true);
       if (!like) {
         const {data} = await postLikeByIdx(idx);
         console.log(data);
@@ -178,6 +180,8 @@ const Detail = ({
       }
     } catch (e) {
       console.log(e);
+    } finally {
+      setLikeLoading(false);
     }
   };
 
@@ -210,16 +214,26 @@ const Detail = ({
             <DetailTitle>
               <DetailTitleText>{data.name}</DetailTitleText>
               <LoveButton
+                disabled={likeLoading}
                 backgroundColor={like ? 'white' : 'red'}
                 onPress={toggleLike}>
-                <Icon
-                  name={'heart'}
-                  size={8}
-                  color={like ? 'black' : 'white'}
-                />
-                <LoveButtonText color={like ? 'black' : 'white'}>
-                  {like ? '찜 해제' : '찜하기'}
-                </LoveButtonText>
+                {likeLoading ? (
+                  <ActivityIndicator
+                    color={like ? 'black' : 'white'}
+                    size={10}
+                  />
+                ) : (
+                  <>
+                    <Icon
+                      name={'heart'}
+                      size={8}
+                      color={like ? 'black' : 'white'}
+                    />
+                    <LoveButtonText color={like ? 'black' : 'white'}>
+                      {like ? '찜 해제' : '찜하기'}
+                    </LoveButtonText>
+                  </>
+                )}
               </LoveButton>
               <ShareButton>
                 <Icon name="share-social" size={10} color="black"></Icon>
