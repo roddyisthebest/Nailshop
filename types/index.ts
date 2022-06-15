@@ -3,8 +3,8 @@ export type Shop = {
   name: string;
   phone: string;
   address: string;
-  latitude: number | null;
-  longitude: number | null;
+  latitude: number;
+  longitude: number;
   kakao: null;
   businessHours: number | null;
   shopMainImage: {

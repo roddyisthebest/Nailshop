@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   ActivityIndicator,
   Linking,
+  Share,
 } from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import styled from 'styled-components/native';
@@ -146,10 +147,22 @@ const Detail = ({
   //   }
   // }, []);
 
+  const shareShop = useCallback(async (name: string, url: string) => {
+    try {
+      await Share.share({
+        message: url,
+        title: name,
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
+
   const getData = async () => {
     try {
       const {data: DetailData} = await getShopByIdx(idx);
       setData(DetailData.data);
+      console.log(DetailData);
     } catch (e) {
       console.log(e);
     }
@@ -242,7 +255,13 @@ const Detail = ({
                   </>
                 )}
               </LoveButton>
-              <ShareButton>
+              <ShareButton
+                onPress={() => {
+                  shareShop(
+                    data.name,
+                    'https://store.coupang.com/vm/vendors/A00520341/products?sourceType=CUSTOM_LINK',
+                  );
+                }}>
                 <Icon name="share-social" size={10} color="black"></Icon>
               </ShareButton>
             </DetailTitle>
@@ -280,17 +299,17 @@ const Detail = ({
             }}>
             <NaverMapView
               style={{width: '100%', height: '100%'}}
-              zoomControl={false}
+              zoomControl={true}
               center={{
                 zoom: 15,
                 tilt: 0,
-                latitude: 35.8666799,
-                longitude: 128.7315022,
+                latitude: data.longitude,
+                longitude: data.latitude,
               }}>
               <Marker
                 coordinate={{
-                  latitude: 35.8666799,
-                  longitude: 128.7315022,
+                  latitude: data.longitude,
+                  longitude: data.latitude,
                 }}
                 pinColor="green"
               />
