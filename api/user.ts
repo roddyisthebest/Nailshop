@@ -4,4 +4,7 @@ import {api} from './index';
 
 const getMyInfo = (): Promise<AxiosResponse<any>> => api.get('/user');
 
-export {getMyInfo};
+const changePhoneNumber = (phone: string): Promise<AxiosResponse<any>> =>
+  api.put('/users', {phone});
+
+export {getMyInfo, changePhoneNumber};

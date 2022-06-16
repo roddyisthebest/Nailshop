@@ -34,3 +34,11 @@ export type Shop = {
   liked: boolean;
   likes: number;
 };
+
+export type UserInfo = {
+  idx: number;
+  email: string;
+  phone: string;
+  oauth: 'KAKAO' | 'FACEBOOK' | 'GOOGLE';
+  createdAt: any;
+};

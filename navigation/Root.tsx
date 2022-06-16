@@ -5,7 +5,7 @@ import Tabs from './Tabs';
 import Auth from './Auth';
 
 import {useDispatch, useSelector} from 'react-redux';
-import {initialStateProps, login} from '../store/slice';
+import {initialStateProps, login, setUserInfo} from '../store/slice';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {setToken} from '../api';
 import {getMyInfo} from '../api/user';
@@ -34,7 +34,8 @@ const Root = () => {
       const accessToken = await EncryptedStorage.getItem('accessToken');
       if (accessToken) {
         await setToken();
-        await getMyInfo();
+        const {data} = await getMyInfo();
+        dispatch(setUserInfo(data.data));
         dispatch(login(true));
       }
     } catch (error: any) {

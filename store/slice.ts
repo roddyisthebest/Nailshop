@@ -1,10 +1,8 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {UserInfo} from '../types';
 
 export type initialStateProps = {
-  userInfo: {
-    name: string;
-    jwt: string;
-  };
+  userInfo: UserInfo;
   isLoggedIn: boolean;
 };
 
@@ -12,7 +10,11 @@ const {actions, reducer} = createSlice({
   name: 'redux',
   initialState: {
     userInfo: {
-      name: '',
+      idx: 0,
+      email: '',
+      phone: '',
+      oauth: '',
+      createdAt: '',
     },
     isLoggedIn: false,
   },
@@ -21,9 +23,26 @@ const {actions, reducer} = createSlice({
       ...state,
       isLoggedIn: log,
     }),
+    setUserInfo: (state, {payload: userInfo}: PayloadAction<UserInfo>) => ({
+      ...state,
+      userInfo: {
+        idx: userInfo.idx,
+        email: userInfo.email,
+        phone: userInfo.phone,
+        oauth: userInfo.oauth,
+        createdAt: userInfo.createdAt,
+      },
+    }),
+    setDigit: (state, {payload: phone}: PayloadAction<string>) => ({
+      ...state,
+      userInfo: {
+        ...state.userInfo,
+        phone: phone,
+      },
+    }),
   },
 });
 
-export const {login} = actions;
+export const {login, setUserInfo, setDigit} = actions;
 
 export default reducer;

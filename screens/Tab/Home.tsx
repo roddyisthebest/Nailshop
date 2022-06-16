@@ -1,28 +1,16 @@
 import {
-  Text,
   View,
   StyleSheet,
   SafeAreaView,
   FlatList,
   Dimensions,
-  Image,
-  TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import axios from 'axios';
 import SearchBar from '../../components/SearchBar';
 import StoreBox from '../../components/StoreBox';
-import {getMyInfo} from '../../api/user';
 import {getShopList} from '../../api/shop';
 import {Shop} from '../../types/index';
-type dateType = {
-  albumId: number;
-  id: number;
-  thumbnailUrl: string;
-  title: string;
-  url: string;
-};
 
 const Home = ({
   navigation: {navigate, setOptions},
@@ -48,7 +36,7 @@ const Home = ({
   const getData = async (isItFirst: boolean) => {
     if (!disabled) {
       try {
-        const {data: shopData} = await getShopList(page);
+        const {data: shopData} = await getShopList(page, false);
         if (isItFirst) {
           setLastPage(shopData.data.total_page);
         }
@@ -70,7 +58,7 @@ const Home = ({
     try {
       setRefreshing(true);
       setPage(0);
-      const {data: shopData} = await getShopList(0);
+      const {data: shopData} = await getShopList(0, false);
       setData(shopData.data.contents);
     } catch (e) {
       console.log(e);
@@ -80,14 +68,6 @@ const Home = ({
       setPage(page => page + 1);
     }
   };
-  // const get = async () => {
-  //   try {
-  //     const {data} = await getMyInfo();
-  //     console.log(data);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // };
 
   useEffect(() => {
     // _getData();
