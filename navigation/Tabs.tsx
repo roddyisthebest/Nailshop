@@ -1,6 +1,5 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {Ionicons} from '@expo/vector-icons';
 import Home from '../screens/Tab/Home';
 import MyInfo from '../screens/Tab/MyInfo';
 import Rank from '../screens/Tab/Rank';

@@ -17,10 +17,16 @@ const postLikeByIdx = (idx: number): Promise<AxiosResponse<any>> =>
 const deleteLikeByIdx = (idx: number): Promise<AxiosResponse<any>> =>
   api.delete(`/shops/${idx}/like`);
 
+const postReservation = (
+  idx: number,
+  type: 'KAKAO' | 'PHONE' | 'MESSAGE',
+): Promise<AxiosResponse<any>> => api.post(`/shops/${idx}/reservation`, {type});
+
 export {
   getShopList,
   getShopRanking,
   getShopByIdx,
   postLikeByIdx,
   deleteLikeByIdx,
+  postReservation,
 };

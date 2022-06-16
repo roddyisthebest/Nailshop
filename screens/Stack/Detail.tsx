@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Linking,
   Share,
+  Alert,
 } from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import styled from 'styled-components/native';
@@ -15,7 +16,12 @@ import DropShadow from 'react-native-drop-shadow';
 import Icon from 'react-native-vector-icons/Ionicons';
 import NaverMapView, {Marker} from 'react-native-nmap';
 import {Shop} from '../../types';
-import {getShopByIdx, postLikeByIdx, deleteLikeByIdx} from '../../api/shop';
+import {
+  getShopByIdx,
+  postLikeByIdx,
+  deleteLikeByIdx,
+  postReservation,
+} from '../../api/shop';
 
 const Container = styled.ScrollView`
   flex: 1;
@@ -200,6 +206,20 @@ const Detail = ({
     }
   };
 
+  const makeReservation = useCallback(
+    async (type: 'KAKAO' | 'PHONE' | 'MESSAGE') => {
+      try {
+        const {data} = await postReservation(idx, type);
+        console.log(data);
+        Alert.alert(`${type}을 이용한 예약이 완료되었습니다.`);
+      } catch (e) {
+        Alert.alert(`${type}을 이용한 예약이 실패하였습니다.`);
+        console.log(e);
+      }
+    },
+    [],
+  );
+
   useEffect(() => {
     getData();
   }, []);
@@ -303,13 +323,13 @@ const Detail = ({
               center={{
                 zoom: 15,
                 tilt: 0,
-                latitude: data.longitude,
-                longitude: data.latitude,
+                latitude: data.latitude,
+                longitude: data.longitude,
               }}>
               <Marker
                 coordinate={{
-                  latitude: data.longitude,
-                  longitude: data.latitude,
+                  latitude: data.latitude,
+                  longitude: data.longitude,
                 }}
                 pinColor="green"
               />
@@ -386,13 +406,15 @@ const Detail = ({
             {phone ? (
               <>
                 <ContactButton
-                  onPress={() => {
+                  onPress={async () => {
+                    await makeReservation('PHONE');
                     Linking.openURL(`tel:${phone}`);
                   }}>
                   <Icon name="call" size={20} color="black" />
                 </ContactButton>
                 <ContactButton
-                  onPress={() => {
+                  onPress={async () => {
+                    await makeReservation('MESSAGE');
                     Linking.openURL(`sms:${phone}`);
                   }}>
                   <Icon name="chatbubble-ellipses" size={20} color="black" />
@@ -401,7 +423,8 @@ const Detail = ({
             ) : null}
 
             <ContactButton
-              onPress={() => {
+              onPress={async () => {
+                await makeReservation('KAKAO');
                 Linking.openURL(`https://open.kakao.com/o/sP3g8xLd`);
               }}>
               <Image

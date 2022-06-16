@@ -36,8 +36,6 @@ const Root = () => {
         await setToken();
         await getMyInfo();
         dispatch(login(true));
-      } else {
-        dispatch(login(false));
       }
     } catch (error: any) {
       if (error.response.status === 401) {
