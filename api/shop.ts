@@ -5,8 +5,18 @@ import {api} from './index';
 const getShopList = (
   page: number,
   like: boolean,
-): Promise<AxiosResponse<any>> =>
-  api.get(`/shops?page=${page}&size=15&like=${like}`);
+  near: boolean,
+  longitude: number,
+  latitude: number,
+): Promise<AxiosResponse<any>> => {
+  console.log(longitude, latitude);
+  if (near) {
+    return api.get(
+      `/shops?page=${page}&size=15&like=${like}&near=${near}&longitude=${longitude}&latitude=${latitude}`,
+    );
+  }
+  return api.get(`/shops?page=${page}&size=15&like=${like}&near=${near}`);
+};
 
 const getShopRanking = (page: number): Promise<AxiosResponse<any>> =>
   api.get(`/shops/ranking?page=${page}&size=15`);

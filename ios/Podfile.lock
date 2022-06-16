@@ -285,6 +285,8 @@ PODS:
     - glog
   - react-native-encrypted-storage (4.0.2):
     - React-Core
+  - react-native-geolocation (2.1.0):
+    - React-Core
   - react-native-nmap (0.0.66):
     - NMapsMap
     - React
@@ -415,6 +417,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-encrypted-storage (from `../node_modules/react-native-encrypted-storage`)
+  - "react-native-geolocation (from `../node_modules/@react-native-community/geolocation`)"
   - react-native-nmap (from `../node_modules/react-native-nmap`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-webview (from `../node_modules/react-native-webview`)
@@ -492,6 +495,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/logger"
   react-native-encrypted-storage:
     :path: "../node_modules/react-native-encrypted-storage"
+  react-native-geolocation:
+    :path: "../node_modules/@react-native-community/geolocation"
   react-native-nmap:
     :path: "../node_modules/react-native-nmap"
   react-native-safe-area-context:
@@ -563,6 +568,7 @@ SPEC CHECKSUMS:
   React-jsinspector: c5989c77cb89ae6a69561095a61cce56a44ae8e8
   React-logger: a0833912d93b36b791b7a521672d8ee89107aff1
   react-native-encrypted-storage: e78d848ce0fb663c2ce306e37921d026809322e6
+  react-native-geolocation: 69f4fd37650b8e7fee91816d395e62dd16f5ab8d
   react-native-nmap: cfcc5402746040494c544ea90a6062f49505acdf
   react-native-safe-area-context: 6c12e3859b6f27b25de4fee8201cfb858432d8de
   react-native-webview: 159034a856a6e95995f5bf2eed40d70b103d6572

@@ -34,7 +34,7 @@ const MyStore = ({
   const getData = async (isItFirst: boolean) => {
     if (!disabled) {
       try {
-        const {data: shopData} = await getShopList(page, true);
+        const {data: shopData} = await getShopList(page, true, false, 0, 0);
         if (isItFirst) {
           setLastPage(shopData.data.total_page);
         }
@@ -56,7 +56,7 @@ const MyStore = ({
     try {
       setRefreshing(true);
       setPage(0);
-      const {data: shopData} = await getShopList(0, true);
+      const {data: shopData} = await getShopList(0, true, false, 0, 0);
       setData(shopData.data.contents);
     } catch (e) {
       console.log(e);

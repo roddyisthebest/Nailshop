@@ -15,7 +15,7 @@ import styled from 'styled-components/native';
 import DropShadow from 'react-native-drop-shadow';
 import Icon from 'react-native-vector-icons/Ionicons';
 import NaverMapView, {Marker} from 'react-native-nmap';
-import {Shop} from '../../types';
+import {Shop, Style} from '../../types';
 import {
   getShopByIdx,
   postLikeByIdx,
@@ -116,13 +116,18 @@ const KeyWordsText = styled.Text`
   margin-bottom: 5px;
 `;
 
-const MenuImage = styled.View`
-  background-color: #eeefef;
-  width: 100px;
-  height: 100px;
+const MenuButton = styled.TouchableOpacity`
+  width: 150px;
+  height: 150px;
 `;
 
-const ContactButton = styled.Pressable`
+const MenuImage = styled.Image`
+  background-color: #eeefef;
+  width: 100%;
+  height: 100%;
+`;
+
+const ContactButton = styled.TouchableOpacity`
   width: 50px;
   height: 50px;
   border-radius: 60px;
@@ -132,11 +137,13 @@ const ContactButton = styled.Pressable`
 `;
 
 const Detail = ({
+  navigation: {navigate},
   route: {
     params: {idx},
   },
 }: {
   route: {params: {idx: number}};
+  navigation: {navigate: Function};
 }) => {
   const [like, setLike] = useState<boolean>(false);
   const [data, setData] = useState<Shop>();
@@ -168,24 +175,27 @@ const Detail = ({
     try {
       const {data: DetailData} = await getShopByIdx(idx);
       setData(DetailData.data);
-      console.log(DetailData);
+      console.log(DetailData.data.styles[0].images);
     } catch (e) {
       console.log(e);
     }
   };
-
-  const testMenuData = [
-    {uri: '', id: 1},
-    {uri: '', id: 2},
-    {uri: '', id: 3},
-    {uri: '', id: 4},
-    {uri: '', id: 5},
-    {uri: '', id: 6},
-    {uri: '', id: 7},
-    {uri: '', id: 8},
-  ];
-
-  const renderItem = ({item}: {item: any}) => <MenuImage />;
+  // https://junggam.click/api/v1/shops/styles/images/
+  const renderItem = ({item}: {item: Style}) => (
+    <MenuButton
+      onPress={() => {
+        navigate('Stacks', {
+          screen: 'LikeStyle',
+          params: {styleIdx: item.idx, liked: item.liked},
+        });
+      }}>
+      <MenuImage
+        source={{
+          uri: `https://junggam.click/api/v1/shops/styles/images/${item.images[0].name}`,
+        }}
+      />
+    </MenuButton>
+  );
 
   const toggleLike = async () => {
     try {
@@ -364,10 +374,9 @@ const Detail = ({
 
               marginTop: 10,
             }}>
-            <KeyWordsText># 친절해요</KeyWordsText>
-            <KeyWordsText># 원하는 스타일로 잘해줘요</KeyWordsText>
-            <KeyWordsText># 시술이 꼼꼼해요</KeyWordsText>
-            <KeyWordsText># 관리법을 잘 알려줘요</KeyWordsText>
+            {data.tags?.map(e => (
+              <KeyWordsText key={e.idx}># {e.name}</KeyWordsText>
+            ))}
           </View>
         </Section>
         <SectionBar />
@@ -380,7 +389,7 @@ const Detail = ({
             }}>
             <SafeAreaView style={{flex: 1}}>
               <FlatList
-                data={testMenuData}
+                data={data.styles}
                 ItemSeparatorComponent={() => <View style={{width: 10}} />}
                 renderItem={renderItem}
                 keyExtractor={(item, index) => index.toString()}

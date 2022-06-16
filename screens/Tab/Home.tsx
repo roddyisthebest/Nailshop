@@ -11,6 +11,7 @@ import SearchBar from '../../components/SearchBar';
 import StoreBox from '../../components/StoreBox';
 import {getShopList} from '../../api/shop';
 import {Shop} from '../../types/index';
+import Geolocation from '@react-native-community/geolocation';
 
 const Home = ({
   navigation: {navigate, setOptions},
@@ -22,6 +23,26 @@ const Home = ({
   const [lastPage, setLastPage] = useState<number>();
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [disabled, setDisabled] = useState(false);
+
+  const [latitude, setLatitude] = useState<number | any>(null);
+  const [longitude, setLongitude] = useState<number | any>(null);
+
+  const geoLocation = async () => {
+    Geolocation.getCurrentPosition(
+      position => {
+        console.log(position);
+        const latitude = JSON.stringify(position.coords.latitude);
+        const longitude = JSON.stringify(position.coords.longitude);
+
+        setLatitude(latitude);
+        setLongitude(longitude);
+      },
+      error => {
+        console.log(error.code, error.message);
+      },
+      {enableHighAccuracy: false, timeout: 15000},
+    );
+  };
 
   const renderItem = ({item, index}: {item: Shop; index: number}) => (
     <StoreBox
@@ -35,8 +56,15 @@ const Home = ({
 
   const getData = async (isItFirst: boolean) => {
     if (!disabled) {
+      console.log(longitude, latitude);
       try {
-        const {data: shopData} = await getShopList(page, false);
+        const {data: shopData} = await getShopList(
+          page,
+          false,
+          true,
+          longitude,
+          latitude,
+        );
         if (isItFirst) {
           setLastPage(shopData.data.total_page);
         }
@@ -58,7 +86,13 @@ const Home = ({
     try {
       setRefreshing(true);
       setPage(0);
-      const {data: shopData} = await getShopList(0, false);
+      const {data: shopData} = await getShopList(
+        0,
+        false,
+        true,
+        longitude,
+        latitude,
+      );
       setData(shopData.data.contents);
     } catch (e) {
       console.log(e);
@@ -71,7 +105,6 @@ const Home = ({
 
   useEffect(() => {
     // _getData();
-    getData(true);
     setOptions({
       headerTitle: () => (
         <View style={{paddingHorizontal: 0}}>
@@ -80,8 +113,15 @@ const Home = ({
       ),
       title: '',
     });
+    geoLocation();
     // get();
   }, []);
+
+  useEffect(() => {
+    if (latitude && longitude) {
+      getData(true);
+    }
+  }, [latitude, longitude]);
 
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
@@ -93,7 +133,7 @@ const Home = ({
         <Text>Go stack</Text>
       </Pressable> */}
 
-      {data.length !== 0 ? (
+      {data.length !== 0 && latitude && longitude ? (
         <SafeAreaView style={styles.container}>
           <FlatList
             data={data}

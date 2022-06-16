@@ -1,3 +1,21 @@
+export type Style = {
+  idx: string;
+  images: {
+    createdAt: Date;
+    extension: 'string';
+    idx: number;
+    name: string;
+    originalName: string;
+    saveName: string;
+    size: number;
+    type: number;
+    uploadPath: string;
+  }[];
+  liked: boolean;
+  name: string;
+  shop: null;
+};
+
 export type Shop = {
   idx: number;
   name: string;
@@ -23,13 +41,7 @@ export type Shop = {
         name: string;
       }[]
     | null;
-  styles:
-    | {
-        idx: number;
-        name: string;
-        images: [];
-      }[]
-    | null;
+  styles: Style[] | null;
   images: null;
   liked: boolean;
   likes: number;

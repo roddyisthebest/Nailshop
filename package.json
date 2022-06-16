@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
+    "@react-native-community/geolocation": "^2.1.0",
     "@react-navigation/bottom-tabs": "^6.3.1",
     "@react-navigation/native": "^6.0.10",
     "@react-navigation/native-stack": "^6.6.2",
@@ -19,6 +20,7 @@
     "expo-constants": "^13.1.1",
     "expo-font": "^10.1.0",
     "expo-linking": "^3.1.0",
+    "expo-location": "^14.2.2",
     "expo-web-browser": "^10.2.1",
     "react": "17.0.2",
     "react-native": "0.68.2",
