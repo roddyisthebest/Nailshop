@@ -42,7 +42,7 @@ const deleteShopLike = (idx: number): Promise<AxiosResponse<any>> =>
   api.delete(`/shops/styles/${idx}/like`);
 
 const getStyleList = (page: number): Promise<AxiosResponse<any>> =>
-  api.get(`/shops/styles?page=${page}&size=15&like=false`);
+  api.get(`/shops/styles?page=${page}&size=10&like=false`);
 
 export {
   getShopList,

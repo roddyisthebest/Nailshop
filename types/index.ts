@@ -47,6 +47,14 @@ export type Shop = {
   likes: number;
 };
 
+export type Reservation = {
+  createdAt: Date;
+  idx: number;
+  shop: Shop;
+  type: 'PHONE' | 'MESSAGE' | 'KAKAO';
+  user: UserInfo;
+};
+
 export type UserInfo = {
   idx: number;
   email: string;

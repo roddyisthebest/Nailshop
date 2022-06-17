@@ -11,4 +11,7 @@ const getAccessByRefresh = (
   refreshToken: string | null,
 ): Promise<AxiosResponse<any>> => api.post('/authorization', {refreshToken});
 
-export {getMyInfo, changePhoneNumber, getAccessByRefresh};
+const getReservationList = (page: number): Promise<AxiosResponse<any>> =>
+  api.get(`/users/reservations?page=${page}&size=15`);
+
+export {getMyInfo, changePhoneNumber, getAccessByRefresh, getReservationList};

@@ -6,27 +6,29 @@ import {
   Dimensions,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import SearchBar from '../../components/SearchBar';
 import RankColumn from '../../components/RankColumn';
 import {getShopRanking} from '../../api/shop';
-import {Shop} from '../../types';
+import {Reservation, Shop} from '../../types';
+import {getReservationList} from '../../api/user';
+import ReservationColumn from '../../components/ReservationColumn';
 
-const Rank = ({
+const MyReservation = ({
   navigation: {setOptions},
 }: {
   navigation: {setOptions: Function};
 }) => {
-  const [data, setData] = useState<Shop[]>([]);
+  const [data, setData] = useState<Reservation[]>([]);
   const [page, setPage] = useState<number>(0);
   const [lastPage, setLastPage] = useState<number>();
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [disabled, setDisabled] = useState(false);
-  const renderItem = ({item, index}: {item: Shop; index: number}) => (
-    <RankColumn
-      uri={`https://junggam.click/api/v1/shops/mainImage/${item.shopMainImage.name}`}
-      rank={index}
-      idx={item.idx}
-      likes={item.likes}></RankColumn>
+  const renderItem = ({item, index}: {item: Reservation; index: number}) => (
+    <ReservationColumn
+      uri={`https://junggam.click/api/v1/shops/mainImage/${item.shop.shopMainImage.name}`}
+      idx={item.shop.idx}
+      name={item.shop.name}
+      time={item.createdAt}
+      type={item.type}></ReservationColumn>
   );
   // const _getData = async () => {
   //   try {
@@ -42,11 +44,11 @@ const Rank = ({
   const getData = async (isItFirst: boolean) => {
     if (!disabled) {
       try {
-        const {data: shopData} = await getShopRanking(page);
+        const {data: reservation} = await getReservationList(page);
         if (isItFirst) {
-          setLastPage(shopData.data.total_page);
+          setLastPage(reservation.data.total_page);
         }
-        setData(data.concat(shopData.data.contents));
+        setData(data.concat(reservation.data.contents));
         setPage(page => page + 1);
       } catch (e) {
         console.log(e);
@@ -64,8 +66,8 @@ const Rank = ({
     try {
       setRefreshing(true);
       setPage(0);
-      const {data: shopData} = await getShopRanking(0);
-      setData(shopData.data.contents);
+      const {data: reservation} = await getReservationList(0);
+      setData(reservation.data.contents);
     } catch (e) {
       console.log(e);
     } finally {
@@ -78,12 +80,7 @@ const Rank = ({
   useEffect(() => {
     getData(true);
     setOptions({
-      headerTitle: () => (
-        <View style={{paddingHorizontal: 0}}>
-          <SearchBar width={Dimensions.get('window').width - 30}></SearchBar>
-        </View>
-      ),
-      title: '',
+      title: '예약기록',
     });
   }, []);
   return (
@@ -110,4 +107,4 @@ const Rank = ({
   );
 };
 
-export default Rank;
+export default MyReservation;

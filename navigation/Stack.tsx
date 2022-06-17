@@ -4,7 +4,7 @@ import Detail from '../screens/Stack/Detail';
 import Edit from '../screens/Stack/Edit';
 import MyStore from '../screens/Stack/MyStore';
 import MyStyle from '../screens/Stack/MyStyle';
-import Record from '../screens/Stack/Record';
+import MyReservation from '../screens/Stack/MyReservation';
 import LikeStyle from '../screens/Stack/LikeStyle';
 
 const NativeStack = createNativeStackNavigator();
@@ -25,7 +25,7 @@ const Stack = () => (
     <NativeStack.Screen name="Edit" component={Edit} />
     <NativeStack.Screen name="MyStore" component={MyStore} />
     <NativeStack.Screen name="MyStyle" component={MyStyle} />
-    <NativeStack.Screen name="Record" component={Record} />
+    <NativeStack.Screen name="MyReservation" component={MyReservation} />
     <NativeStack.Screen name="LikeStyle" component={LikeStyle} />
   </NativeStack.Navigator>
 );

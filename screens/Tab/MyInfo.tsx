@@ -74,7 +74,7 @@ const MyInfo = ({
           marginBottom={false}
           text="예약 기록"
           func={goSomewhere}
-          screen="Record"></NavigationButton>
+          screen="MyReservation"></NavigationButton>
       </Section>
     </View>
   );
