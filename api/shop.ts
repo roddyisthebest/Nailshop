@@ -35,6 +35,15 @@ const postReservation = (
   type: 'KAKAO' | 'PHONE' | 'MESSAGE',
 ): Promise<AxiosResponse<any>> => api.post(`/shops/${idx}/reservation`, {type});
 
+const postShopLike = (idx: number): Promise<AxiosResponse<any>> =>
+  api.post(`/shops/styles/${idx}/like`);
+
+const deleteShopLike = (idx: number): Promise<AxiosResponse<any>> =>
+  api.delete(`/shops/styles/${idx}/like`);
+
+const getStyleList = (page: number): Promise<AxiosResponse<any>> =>
+  api.get(`/shops/styles?page=${page}&size=15&like=false`);
+
 export {
   getShopList,
   getShopRanking,
@@ -42,4 +51,7 @@ export {
   postLikeByIdx,
   deleteLikeByIdx,
   postReservation,
+  postShopLike,
+  deleteShopLike,
+  getStyleList,
 };

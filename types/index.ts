@@ -13,7 +13,7 @@ export type Style = {
   }[];
   liked: boolean;
   name: string;
-  shop: null;
+  shop: Shop;
 };
 
 export type Shop = {
@@ -41,7 +41,7 @@ export type Shop = {
         name: string;
       }[]
     | null;
-  styles: Style[] | null;
+  styles: Style[];
   images: null;
   liked: boolean;
   likes: number;

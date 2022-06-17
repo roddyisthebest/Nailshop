@@ -74,7 +74,7 @@ const Home = ({
       } catch (e: any) {
         if (e.response.status === 401) {
           await getTokenAndRefresh();
-          getData(true);
+          // getData(true);
         }
       }
     }

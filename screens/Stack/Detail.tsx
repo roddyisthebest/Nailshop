@@ -10,7 +10,7 @@ import {
   Share,
   Alert,
 } from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState, useRef} from 'react';
 import styled from 'styled-components/native';
 import DropShadow from 'react-native-drop-shadow';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -21,11 +21,47 @@ import {
   postLikeByIdx,
   deleteLikeByIdx,
   postReservation,
+  postShopLike,
+  deleteShopLike,
 } from '../../api/shop';
 
 const Container = styled.ScrollView`
   flex: 1;
   background-color: white;
+  position: relative;
+`;
+
+const Popup = styled.View`
+  align-items: center;
+  z-index: 100;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  justify-content: center;
+`;
+
+const PopupButtonColumn = styled.View`
+  height: 80px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 5px;
+  position: absolute;
+  width: 100%;
+  top: 0;
+`;
+
+const PopupupButton = styled.Pressable`
+  width: 50px;
+  height: 50px;
+  justify-content: center;
+  align-items: center;
+`;
+
+const PopupImage = styled.ImageBackground<{width: number}>`
+  width: 100%;
+  height: ${props => `${props.width}px`};
 `;
 
 const DetailImage = styled.Image<{height: number}>`
@@ -149,6 +185,12 @@ const Detail = ({
   const [data, setData] = useState<Shop>();
   const [phone, setPhone] = useState<string>();
   const [likeLoading, setLikeLoading] = useState<boolean>(false);
+  const [popup, setPopup] = useState<boolean>(false);
+  // const [uri, setUri] = useState<string>('');
+  // const [styleLike, setStyleLike] = useState<boolean>(false);
+  const [style, setStyle] = useState<Style[]>([]);
+  const [styleIndex, setStyleIndex] = useState<number>(0);
+  const [render, setRender] = useState<boolean>(false);
   // const getImage = useCallback(async () => {
   //   try {
   //     const {data} =await axios.get(
@@ -171,6 +213,32 @@ const Detail = ({
     }
   }, []);
 
+  const setStyleLike = async (liked: boolean, idx: string) => {
+    try {
+      if (!liked) {
+        await postShopLike(parseInt(idx));
+        // setStyle(
+        //   style.splice(styleIndex, 1, {...style[styleIndex], liked: true}),
+        // );
+        style.splice(styleIndex, 1, {...style[styleIndex], liked: !liked});
+        setRender(!render);
+        // setStyle(copyData);
+        // setStyle({...style, liked: true});
+      } else {
+        await deleteShopLike(parseInt(idx));
+        style.splice(styleIndex, 1, {...style[styleIndex], liked: !like});
+        setRender(!render);
+
+        // setStyle(
+        //   style.splice(styleIndex, 1, {...style[styleIndex], liked: false}),
+        // );
+        // setStyle({...style, liked: false});
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const getData = async () => {
     try {
       const {data: DetailData} = await getShopByIdx(idx);
@@ -181,13 +249,11 @@ const Detail = ({
     }
   };
   // https://junggam.click/api/v1/shops/styles/images/
-  const renderItem = ({item}: {item: Style}) => (
+  const renderItem = ({index, item}: {index: number; item: Style}) => (
     <MenuButton
       onPress={() => {
-        navigate('Stacks', {
-          screen: 'LikeStyle',
-          params: {styleIdx: item.idx, liked: item.liked},
-        });
+        setStyleIndex(index);
+        setPopup(true);
       }}>
       <MenuImage
         source={{
@@ -239,211 +305,244 @@ const Detail = ({
       setLike(data.liked);
       if (data.phone) {
         const editedPhone = data.phone.replace(/-/gi, '');
-        console.log(editedPhone);
         setPhone(editedPhone);
+      }
+      if (data.styles) {
+        setStyle(data.styles);
       }
     }
   }, [data]);
 
   return data ? (
-    <Container>
-      <DetailImage
-        height={Dimensions.get('window').height / 4}
-        source={{
-          uri: 'https://ms-housing.kr/data/file/commercial_gallery/238359480_9WMSZO5G_bd5c18f2abe382fb72c35adeda10747fee1c6302.JPG',
-        }}></DetailImage>
-      <DetailContent>
-        <DropShadow
-          style={{
-            shadowColor: '#171717',
-            shadowOffset: {width: 0, height: 3},
-            shadowOpacity: 0.25,
-            shadowRadius: 2,
-          }}>
-          <DetailTitleWrapper>
-            <DetailTitle>
-              <DetailTitleText>{data.name}</DetailTitleText>
-              <LoveButton
-                disabled={likeLoading}
-                backgroundColor={like ? 'white' : 'red'}
-                onPress={toggleLike}>
-                {likeLoading ? (
-                  <ActivityIndicator
-                    color={like ? 'black' : 'white'}
-                    size={10}
-                  />
-                ) : (
-                  <>
-                    <Icon
-                      name={'heart'}
-                      size={8}
+    <View style={{flex: 1}}>
+      <Container>
+        <DetailImage
+          height={Dimensions.get('window').height / 4}
+          source={{
+            uri: 'https://ms-housing.kr/data/file/commercial_gallery/238359480_9WMSZO5G_bd5c18f2abe382fb72c35adeda10747fee1c6302.JPG',
+          }}></DetailImage>
+        <DetailContent>
+          <DropShadow
+            style={{
+              shadowColor: '#171717',
+              shadowOffset: {width: 0, height: 3},
+              shadowOpacity: 0.25,
+              shadowRadius: 2,
+            }}>
+            <DetailTitleWrapper>
+              <DetailTitle>
+                <DetailTitleText>{data.name}</DetailTitleText>
+                <LoveButton
+                  disabled={likeLoading}
+                  backgroundColor={like ? 'white' : 'red'}
+                  onPress={toggleLike}>
+                  {likeLoading ? (
+                    <ActivityIndicator
                       color={like ? 'black' : 'white'}
+                      size={10}
                     />
-                    <LoveButtonText color={like ? 'black' : 'white'}>
-                      {like ? '찜 해제' : '찜하기'}
-                    </LoveButtonText>
-                  </>
-                )}
-              </LoveButton>
-              <ShareButton
-                onPress={() => {
-                  shareShop(
-                    data.name,
-                    'https://store.coupang.com/vm/vendors/A00520341/products?sourceType=CUSTOM_LINK',
-                  );
-                }}>
-                <Icon name="share-social" size={10} color="black"></Icon>
-              </ShareButton>
-            </DetailTitle>
-            <Information style={{marginBottom: 5}}>
-              <Icon name={'navigate'} size={15} color="black" />
-              <Text style={{fontSize: 10, color: 'black', marginLeft: 10}}>
-                {data.address}
-              </Text>
-            </Information>
-            <Information style={{marginBottom: 5}}>
-              <Icon name={'time-outline'} size={15} color="black" />
-              <Text style={{fontSize: 10, color: 'black', marginLeft: 10}}>
-                {data.businessHours
-                  ? data.businessHours?.toString().includes('영업시간')
-                    ? data.businessHours.toString().substring(5)
-                    : data.businessHours
-                  : '데이터가 없습니다.'}
-              </Text>
-            </Information>
-            <Information>
-              <Icon name={'call-outline'} size={15} color="black" />
-              <Text style={{fontSize: 10, color: 'black', marginLeft: 10}}>
-                {data.phone ? data.phone : '데이터가 없습니다.'}
-              </Text>
-            </Information>
-          </DetailTitleWrapper>
-        </DropShadow>
-        <Section>
-          <SectionText>위치</SectionText>
-          <View
-            style={{
-              width: '100%',
-              height: 200,
-              marginTop: 10,
-            }}>
-            <NaverMapView
-              style={{width: '100%', height: '100%'}}
-              zoomControl={true}
-              center={{
-                zoom: 15,
-                tilt: 0,
-                latitude: data.latitude,
-                longitude: data.longitude,
-              }}>
-              <Marker
-                coordinate={{
-                  latitude: data.latitude,
-                  longitude: data.longitude,
-                }}
-                pinColor="green"
-              />
-            </NaverMapView>
-          </View>
-        </Section>
-        <SectionBar />
-        <Section>
-          <SectionText>가격표</SectionText>
-          <View
-            style={{
-              width: '100%',
-              height: 200,
-              marginTop: 10,
-            }}>
-            <Image
+                  ) : (
+                    <>
+                      <Icon
+                        name={'heart'}
+                        size={8}
+                        color={like ? 'black' : 'white'}
+                      />
+                      <LoveButtonText color={like ? 'black' : 'white'}>
+                        {like ? '찜 해제' : '찜하기'}
+                      </LoveButtonText>
+                    </>
+                  )}
+                </LoveButton>
+                <ShareButton
+                  onPress={() => {
+                    shareShop(
+                      data.name,
+                      'https://store.coupang.com/vm/vendors/A00520341/products?sourceType=CUSTOM_LINK',
+                    );
+                  }}>
+                  <Icon name="share-social" size={10} color="black"></Icon>
+                </ShareButton>
+              </DetailTitle>
+              <Information style={{marginBottom: 5}}>
+                <Icon name={'navigate'} size={15} color="black" />
+                <Text style={{fontSize: 10, color: 'black', marginLeft: 10}}>
+                  {data.address}
+                </Text>
+              </Information>
+              <Information style={{marginBottom: 5}}>
+                <Icon name={'time-outline'} size={15} color="black" />
+                <Text style={{fontSize: 10, color: 'black', marginLeft: 10}}>
+                  {data.businessHours
+                    ? data.businessHours?.toString().includes('영업시간')
+                      ? data.businessHours.toString().substring(5)
+                      : data.businessHours
+                    : '데이터가 없습니다.'}
+                </Text>
+              </Information>
+              <Information>
+                <Icon name={'call-outline'} size={15} color="black" />
+                <Text style={{fontSize: 10, color: 'black', marginLeft: 10}}>
+                  {data.phone ? data.phone : '데이터가 없습니다.'}
+                </Text>
+              </Information>
+            </DetailTitleWrapper>
+          </DropShadow>
+          <Section>
+            <SectionText>위치</SectionText>
+            <View
               style={{
                 width: '100%',
-                height: '100%',
-              }}
-              source={{
-                uri: 'https://mblogthumb-phinf.pstatic.net/20130212_168/lulueyelash2_1360656212622FtqN5_JPEG/%C1%A9%B3%D7%C0%CF%BE%C6%C6%AE%B0%A1%B0%DD2.jpg?type=w2',
-              }}></Image>
-          </View>
-        </Section>
-        <SectionBar />
-        <Section>
-          <SectionText>키워드</SectionText>
-          <View
-            style={{
-              width: '100%',
-
-              marginTop: 10,
-            }}>
-            {data.tags?.map(e => (
-              <KeyWordsText key={e.idx}># {e.name}</KeyWordsText>
-            ))}
-          </View>
-        </Section>
-        <SectionBar />
-        <Section>
-          <SectionText>디자인 목록</SectionText>
-          <View
-            style={{
-              width: '100%',
-              marginTop: 10,
-            }}>
-            <SafeAreaView style={{flex: 1}}>
-              <FlatList
-                data={data.styles}
-                ItemSeparatorComponent={() => <View style={{width: 10}} />}
-                renderItem={renderItem}
-                keyExtractor={(item, index) => index.toString()}
-                horizontal
-              />
-            </SafeAreaView>
-          </View>
-        </Section>
-        <SectionBar />
-
-        <Section>
-          <SectionText>Contact</SectionText>
-          <View
-            style={{
-              width: '100%',
-              marginTop: 10,
-              height: 100,
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-around',
-            }}>
-            {phone ? (
-              <>
-                <ContactButton
-                  onPress={async () => {
-                    await makeReservation('PHONE');
-                    Linking.openURL(`tel:${phone}`);
-                  }}>
-                  <Icon name="call" size={20} color="black" />
-                </ContactButton>
-                <ContactButton
-                  onPress={async () => {
-                    await makeReservation('MESSAGE');
-                    Linking.openURL(`sms:${phone}`);
-                  }}>
-                  <Icon name="chatbubble-ellipses" size={20} color="black" />
-                </ContactButton>
-              </>
-            ) : null}
-
-            <ContactButton
-              onPress={async () => {
-                await makeReservation('KAKAO');
-                Linking.openURL(`https://open.kakao.com/o/sP3g8xLd`);
+                height: 200,
+                marginTop: 10,
+              }}>
+              <NaverMapView
+                style={{width: '100%', height: '100%'}}
+                zoomControl={true}
+                center={{
+                  zoom: 15,
+                  tilt: 0,
+                  latitude: data.latitude,
+                  longitude: data.longitude,
+                }}>
+                <Marker
+                  coordinate={{
+                    latitude: data.latitude,
+                    longitude: data.longitude,
+                  }}
+                  pinColor="green"
+                />
+              </NaverMapView>
+            </View>
+          </Section>
+          <SectionBar />
+          <Section>
+            <SectionText>가격표</SectionText>
+            <View
+              style={{
+                width: '100%',
+                height: 200,
+                marginTop: 10,
               }}>
               <Image
-                style={{width: '50%', height: '50%'}}
-                source={require('../../assets/img/kakao_logo.png')}></Image>
-            </ContactButton>
-          </View>
-        </Section>
-      </DetailContent>
-    </Container>
+                style={{
+                  width: '100%',
+                  height: '100%',
+                }}
+                source={{
+                  uri: 'https://mblogthumb-phinf.pstatic.net/20130212_168/lulueyelash2_1360656212622FtqN5_JPEG/%C1%A9%B3%D7%C0%CF%BE%C6%C6%AE%B0%A1%B0%DD2.jpg?type=w2',
+                }}></Image>
+            </View>
+          </Section>
+          <SectionBar />
+          <Section>
+            <SectionText>키워드</SectionText>
+            <View
+              style={{
+                width: '100%',
+
+                marginTop: 10,
+              }}>
+              {data.tags?.map(e => (
+                <KeyWordsText key={e.idx}># {e.name}</KeyWordsText>
+              ))}
+            </View>
+          </Section>
+          <SectionBar />
+          <Section>
+            <SectionText>디자인 목록</SectionText>
+            <View
+              style={{
+                width: '100%',
+                marginTop: 10,
+              }}>
+              <SafeAreaView style={{flex: 1}}>
+                <FlatList
+                  data={data.styles}
+                  ItemSeparatorComponent={() => <View style={{width: 10}} />}
+                  renderItem={renderItem}
+                  keyExtractor={(item, index) => index.toString()}
+                  horizontal
+                />
+              </SafeAreaView>
+            </View>
+          </Section>
+          <SectionBar />
+
+          <Section>
+            <SectionText>Contact</SectionText>
+            <View
+              style={{
+                width: '100%',
+                marginTop: 10,
+                height: 100,
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-around',
+              }}>
+              {phone ? (
+                <>
+                  <ContactButton
+                    onPress={async () => {
+                      await makeReservation('PHONE');
+                      Linking.openURL(`tel:${phone}`);
+                    }}>
+                    <Icon name="call" size={20} color="black" />
+                  </ContactButton>
+                  <ContactButton
+                    onPress={async () => {
+                      await makeReservation('MESSAGE');
+                      Linking.openURL(`sms:${phone}`);
+                    }}>
+                    <Icon name="chatbubble-ellipses" size={20} color="black" />
+                  </ContactButton>
+                </>
+              ) : null}
+
+              <ContactButton
+                onPress={async () => {
+                  await makeReservation('KAKAO');
+                  Linking.openURL(`https://open.kakao.com/o/sP3g8xLd`);
+                }}>
+                <Image
+                  style={{width: '50%', height: '50%'}}
+                  source={require('../../assets/img/kakao_logo.png')}></Image>
+              </ContactButton>
+            </View>
+          </Section>
+        </DetailContent>
+      </Container>
+      {popup ? (
+        <Popup>
+          <PopupButtonColumn>
+            <PopupupButton
+              onPress={() => {
+                setPopup(false);
+              }}>
+              <Icon name={'close-outline'} size={30} color="white" />
+            </PopupupButton>
+            <PopupupButton
+              onPress={() => {
+                // console.log(style[styleIndex].liked);
+                setStyleLike(style[styleIndex].liked, style[styleIndex].idx);
+              }}>
+              <Icon
+                name={style[styleIndex].liked ? 'heart' : 'heart-outline'}
+                size={25}
+                color="white"
+              />
+            </PopupupButton>
+          </PopupButtonColumn>
+          <PopupImage
+            source={{
+              uri: `https://junggam.click/api/v1/shops/styles/images/${style[styleIndex].images[0].name}`,
+            }}
+            width={Dimensions.get('window').width}
+            resizeMode="contain"></PopupImage>
+        </Popup>
+      ) : null}
+    </View>
   ) : (
     <View style={{flex: 1, alignItems: 'center', marginTop: 30}}>
       <ActivityIndicator color="black" size={50} />
