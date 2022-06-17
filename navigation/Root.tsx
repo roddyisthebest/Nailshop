@@ -8,8 +8,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import {initialStateProps, login, setUserInfo} from '../store/slice';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {setToken} from '../api';
-import {getMyInfo} from '../api/user';
-import {Image, View} from 'react-native';
+import {getAccessByRefresh, getMyInfo} from '../api/user';
+import {Alert, Image, View} from 'react-native';
 
 const Nav = createNativeStackNavigator();
 
@@ -28,27 +28,33 @@ const Root = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState<boolean>(true);
 
-  const getAccessToken = useCallback(async () => {
-    setLoading(true);
+  const getTokenAndRefresh = useCallback(async () => {
     try {
-      const accessToken = await EncryptedStorage.getItem('accessToken');
-      if (accessToken) {
-        await setToken();
-        const {data} = await getMyInfo();
-        dispatch(setUserInfo(data.data));
-        dispatch(login(true));
+      const refreshToken = await EncryptedStorage.getItem('refreshToken');
+      if (!refreshToken) {
+        return;
       }
-    } catch (error: any) {
-      if (error.response.status === 401) {
-        dispatch(login(false));
+      const {
+        data: {
+          data: {accessToken},
+        },
+      } = await getAccessByRefresh(refreshToken);
+      await EncryptedStorage.setItem('accessToken', accessToken);
+      await setToken();
+      const {data} = await getMyInfo();
+      dispatch(setUserInfo(data.data));
+      dispatch(login(true));
+    } catch (e: any) {
+      if (e.response.status === 401) {
+        Alert.alert('토큰이 만료되었습니다. 다시 로그인해주세요.');
       }
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
-    getAccessToken();
+    getTokenAndRefresh();
   }, []);
   const {isLoggedIn} = useSelector((state: initialStateProps) => ({
     isLoggedIn: state.isLoggedIn,

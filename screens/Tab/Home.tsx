@@ -12,6 +12,7 @@ import StoreBox from '../../components/StoreBox';
 import {getShopList} from '../../api/shop';
 import {Shop} from '../../types/index';
 import Geolocation from '@react-native-community/geolocation';
+import getTokenAndRefresh from '../../util/getToken';
 
 const Home = ({
   navigation: {navigate, setOptions},
@@ -70,8 +71,11 @@ const Home = ({
         }
         setData(data.concat(shopData.data.contents));
         setPage(page => page + 1);
-      } catch (e) {
-        console.log(e);
+      } catch (e: any) {
+        if (e.response.status === 401) {
+          await getTokenAndRefresh();
+          getData(true);
+        }
       }
     }
   };

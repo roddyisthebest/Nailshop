@@ -19,25 +19,28 @@ const Record = ({
   window.ReactNativeWebView.postMessage(element[0].innerHTML);
   `;
 
-  const [jwt, setJwt] = useState<string>();
+  const [accessToken, setAccessToken] = useState<string>();
+  const [refreshToken, setRefreshToken] = useState<string>();
 
   const onWebViewMessage = (e: any) => {
     const jsonData = JSON.parse(e.nativeEvent.data);
-    if (jsonData.data.jwt) {
-      setJwt(jsonData.data.jwt);
+    if (jsonData.data.accessToken && jsonData.data.refreshToken) {
+      setAccessToken(jsonData.data.accessToken);
+      setRefreshToken(jsonData.data.refreshToken);
     }
   };
 
-  const setTokenInfo = async (jwt: string) => {
-    await EncryptedStorage.setItem('accessToken', jwt);
+  const setTokenInfo = async (access: string, refresh: string) => {
+    await EncryptedStorage.setItem('refreshToken', refresh);
+    await EncryptedStorage.setItem('accessToken', access);
     await setToken();
     dispatch(login(true));
   };
   useEffect(() => {
-    if (jwt) {
-      setTokenInfo(jwt);
+    if (accessToken && refreshToken) {
+      setTokenInfo(accessToken, refreshToken);
     }
-  }, [jwt]);
+  }, [accessToken, refreshToken]);
 
   return (
     <View style={{flex: 1}}>

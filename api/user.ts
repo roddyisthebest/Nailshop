@@ -7,4 +7,8 @@ const getMyInfo = (): Promise<AxiosResponse<any>> => api.get('/user');
 const changePhoneNumber = (phone: string): Promise<AxiosResponse<any>> =>
   api.put('/users', {phone});
 
-export {getMyInfo, changePhoneNumber};
+const getAccessByRefresh = (
+  refreshToken: string | null,
+): Promise<AxiosResponse<any>> => api.post('/authorization', {refreshToken});
+
+export {getMyInfo, changePhoneNumber, getAccessByRefresh};
