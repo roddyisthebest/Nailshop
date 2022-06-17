@@ -5,8 +5,8 @@ import Edit from '../screens/Stack/Edit';
 import MyStore from '../screens/Stack/MyStore';
 import MyStyle from '../screens/Stack/MyStyle';
 import MyReservation from '../screens/Stack/MyReservation';
-import LikeStyle from '../screens/Stack/LikeStyle';
-
+import Search from '../screens/Stack/Search';
+import {Text} from 'react-native';
 const NativeStack = createNativeStackNavigator();
 
 const Stack = () => (
@@ -26,7 +26,11 @@ const Stack = () => (
     <NativeStack.Screen name="MyStore" component={MyStore} />
     <NativeStack.Screen name="MyStyle" component={MyStyle} />
     <NativeStack.Screen name="MyReservation" component={MyReservation} />
-    <NativeStack.Screen name="LikeStyle" component={LikeStyle} />
+    <NativeStack.Screen
+      name="Search"
+      component={Search}
+      options={{headerLeft: props => null}}
+    />
   </NativeStack.Navigator>
 );
 

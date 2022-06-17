@@ -45,8 +45,11 @@ const Record = ({
   return (
     <View style={{flex: 1}}>
       <WebView
+        userAgent="Chrome"
         source={{uri: url}}
         onMessage={onWebViewMessage}
+        sharedCookiesEnabled={true}
+        thirdPartyCookiesEnabled={true}
         javaScriptEnabled={true}
         injectedJavaScript={IJECTED_JAVASCRIPT}></WebView>
     </View>

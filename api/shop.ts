@@ -17,7 +17,12 @@ const getShopList = (
   }
   return api.get(`/shops?page=${page}&size=15&like=${like}&near=${near}`);
 };
-
+const searchShopList = (
+  page: number,
+  type: string,
+  keyword: string,
+): Promise<AxiosResponse<any>> =>
+  api.get(`/shops?page=${page}&size=15&like=false&${type}=${keyword}`);
 const getShopRanking = (page: number): Promise<AxiosResponse<any>> =>
   api.get(`/shops/ranking?page=${page}&size=15`);
 
@@ -54,4 +59,5 @@ export {
   postShopLike,
   deleteShopLike,
   getStyleList,
+  searchShopList,
 };

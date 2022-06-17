@@ -17,6 +17,7 @@ const MyReservation = ({
 }: {
   navigation: {setOptions: Function};
 }) => {
+  const [loading, setLoading] = useState<boolean>(true);
   const [data, setData] = useState<Reservation[]>([]);
   const [page, setPage] = useState<number>(0);
   const [lastPage, setLastPage] = useState<number>();
@@ -52,6 +53,8 @@ const MyReservation = ({
         setPage(page => page + 1);
       } catch (e) {
         console.log(e);
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -85,7 +88,11 @@ const MyReservation = ({
   }, []);
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
-      {data.length !== 0 ? (
+      {loading ? (
+        <View style={{flex: 1, alignItems: 'center', marginTop: 30}}>
+          <ActivityIndicator color="black" size={50} />
+        </View>
+      ) : data.length !== 0 ? (
         <FlatList
           data={data}
           ItemSeparatorComponent={() => <View style={{height: 15}} />}
@@ -99,8 +106,8 @@ const MyReservation = ({
           contentContainerStyle={{paddingHorizontal: 15, paddingVertical: 15}}
         />
       ) : (
-        <View style={{flex: 1, alignItems: 'center', marginTop: 30}}>
-          <ActivityIndicator color="black" size={50} />
+        <View style={{flex: 1, alignItems: 'center', marginTop: 40}}>
+          <Text>예약 기록이 없습니다.</Text>
         </View>
       )}
     </View>

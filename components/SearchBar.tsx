@@ -1,8 +1,10 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {LoggedInParamList} from '../navigation/Root';
 
-const Container = styled.View`
+const Container = styled.Pressable`
   background-color: #eeefef;
   padding: 10px 15px;
   height: 38px;
@@ -25,16 +27,28 @@ const Button = styled.Pressable`
 
 const SearchBar = ({width}: {width: number}) => {
   const onSubmit = () => {};
+  const navigation = useNavigation<
+    NavigationProp<{
+      Stacks: {
+        screen: string;
+      };
+    }>
+  >();
 
   return (
-    <Container style={{width}}>
+    <Container
+      style={{width}}
+      onPress={() => {
+        navigation.navigate('Stacks', {screen: 'Search'});
+      }}>
       <Button>
         <Icon name="search" size={13} color="#767677"></Icon>
       </Button>
       <Input
         placeholder="검색"
         returnKeyType="search"
-        onSubmitEditing={onSubmit}></Input>
+        onSubmitEditing={onSubmit}
+        editable={false}></Input>
     </Container>
   );
 };

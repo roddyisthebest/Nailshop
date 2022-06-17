@@ -98,7 +98,14 @@ const Login = ({
         <Button
           backColor="#D15442"
           style={{width: Dimensions.get('window').width / 1.5}}
-          onPress={signIn}>
+          onPress={() => {
+            navigate('Auth', {
+              screen: 'SnsLogin',
+              params: {
+                url: 'https://junggam.click/oauth2/authorization/google',
+              },
+            });
+          }}>
           <ButtonLogoWrapper>
             <Icon name="logo-google" size={20} color="white" />
           </ButtonLogoWrapper>
@@ -107,6 +114,14 @@ const Login = ({
           </ButtonNameWrapper>
         </Button>
         <Button
+          onPress={() => {
+            navigate('Auth', {
+              screen: 'SnsLogin',
+              params: {
+                url: 'https://junggam.click/oauth2/authorization/facebook',
+              },
+            });
+          }}
           backColor="#3b5998"
           style={{width: Dimensions.get('window').width / 1.5}}>
           <ButtonLogoWrapper>

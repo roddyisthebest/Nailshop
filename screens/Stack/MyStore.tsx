@@ -4,6 +4,7 @@ import {
   SafeAreaView,
   FlatList,
   ActivityIndicator,
+  Text,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import StoreBox from '../../components/StoreBox';
@@ -15,6 +16,7 @@ const MyStore = ({
 }: {
   navigation: {navigate: Function; setOptions: Function};
 }) => {
+  const [loading, setLoading] = useState<boolean>(true);
   const [data, setData] = useState<Shop[]>([]);
   const [page, setPage] = useState<number>(0);
   const [lastPage, setLastPage] = useState<number>();
@@ -42,6 +44,8 @@ const MyStore = ({
         setPage(page => page + 1);
       } catch (e) {
         console.log(e);
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -83,8 +87,15 @@ const MyStore = ({
         }}>
         <Text>Go stack</Text>
       </Pressable> */}
-
-      {data.length !== 0 ? (
+      {loading ? (
+        <View style={{flex: 1, alignItems: 'center', marginTop: 30}}>
+          <ActivityIndicator color="black" size={50} />
+        </View>
+      ) : data.length === 0 ? (
+        <View style={{flex: 1, alignItems: 'center', marginTop: 40}}>
+          <Text>찜한 가게가 없습니다.</Text>
+        </View>
+      ) : (
         <SafeAreaView style={styles.container}>
           <FlatList
             data={data}
@@ -99,10 +110,6 @@ const MyStore = ({
             onRefresh={_handleRefresh}
           />
         </SafeAreaView>
-      ) : (
-        <View style={{flex: 1, alignItems: 'center', marginTop: 30}}>
-          <ActivityIndicator color="black" size={50} />
-        </View>
       )}
     </View>
   );
