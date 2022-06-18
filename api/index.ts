@@ -10,3 +10,4 @@ export const setToken = async () => {
   const accessToken = await EncryptedStorage.getItem('accessToken');
   api.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 };
+

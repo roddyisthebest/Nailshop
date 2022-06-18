@@ -1,9 +1,10 @@
-import {Text, View, Pressable} from 'react-native';
+import {View, Pressable} from 'react-native';
 import React from 'react';
 import styled from 'styled-components/native';
 import NavigationButton from '../../components/NavigateButton';
+import {reset} from '../../store/slice';
 import {useDispatch} from 'react-redux';
-import {login} from '../../store/slice';
+import EncryptedStorage from 'react-native-encrypted-storage';
 const Section = styled.View<{isItLast: boolean}>`
   border-bottom-color: ${props => (!props.isItLast ? '#eeefef' : 'none')};
   border-bottom-width: ${props => (!props.isItLast ? '1px' : '0px')};
@@ -29,13 +30,17 @@ const MyInfo = ({
   navigation: {navigate: Function};
 }) => {
   const dispatch = useDispatch();
-
   const goSomewhere = (screen: string) => {
     navigate('Stacks', {screen});
   };
 
-  const logout = () => {
-    dispatch(login(false));
+  const logout = async () => {
+    try {
+      await EncryptedStorage.clear();
+      dispatch(reset());
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -51,7 +56,10 @@ const MyInfo = ({
           text="회원정보 수정"
           func={goSomewhere}
           screen="Edit"></NavigationButton>
-        <Pressable onPress={logout}>
+        <Pressable
+          onPress={async () => {
+            await logout();
+          }}>
           <LogoutText>로그아웃</LogoutText>
         </Pressable>
       </Section>

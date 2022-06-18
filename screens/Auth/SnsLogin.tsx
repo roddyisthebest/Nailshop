@@ -4,7 +4,8 @@ import {WebView} from 'react-native-webview';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {setToken} from '../../api';
 import {useDispatch} from 'react-redux';
-import {login} from '../../store/slice';
+import {login, setUserInfo} from '../../store/slice';
+import {getMyInfo} from '../../api/user';
 const Record = ({
   route: {
     params: {url},
@@ -34,6 +35,8 @@ const Record = ({
     await EncryptedStorage.setItem('refreshToken', refresh);
     await EncryptedStorage.setItem('accessToken', access);
     await setToken();
+    const {data} = await getMyInfo();
+    dispatch(setUserInfo(data.data));
     dispatch(login(true));
   };
   useEffect(() => {

@@ -1,15 +1,15 @@
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {useDispatch} from 'react-redux';
+// import {useDispatch} from 'react-redux';
 import {setToken} from '../api';
 import {getAccessByRefresh, getMyInfo} from '../api/user';
 import {login, setUserInfo} from '../store/slice';
 
 const getTokenAndRefresh = async () => {
-  const dispatch = useDispatch();
+  console.log('refresh go');
   try {
     const refreshToken = await EncryptedStorage.getItem('refreshToken');
     if (!refreshToken) {
-      dispatch(login(false));
+      return false;
     }
     const {
       data: {
@@ -19,10 +19,10 @@ const getTokenAndRefresh = async () => {
     await EncryptedStorage.setItem('accessToken', accessToken);
     await setToken();
     const {data} = await getMyInfo();
-    dispatch(setUserInfo(data.data));
+    return true;
   } catch (e: any) {
     if (e.response.status === 401) {
-      dispatch(login(false));
+      return false;
     }
   }
 };

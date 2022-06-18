@@ -13,12 +13,17 @@ import {getShopList} from '../../api/shop';
 import {Shop} from '../../types/index';
 import Geolocation from '@react-native-community/geolocation';
 import getTokenAndRefresh from '../../util/getToken';
-
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {setToken} from '../../api';
+import {api} from '../../api';
+import {useDispatch} from 'react-redux';
+import {login} from '../../store/slice';
 const Home = ({
   navigation: {navigate, setOptions},
 }: {
   navigation: {navigate: Function; setOptions: Function};
 }) => {
+  const dispatch = useDispatch();
   const [data, setData] = useState<Shop[]>([]);
   const [page, setPage] = useState<number>(0);
   const [lastPage, setLastPage] = useState<number>();
@@ -57,7 +62,6 @@ const Home = ({
 
   const getData = async (isItFirst: boolean) => {
     if (!disabled) {
-      console.log(longitude, latitude);
       try {
         const {data: shopData} = await getShopList(
           page,
@@ -66,15 +70,18 @@ const Home = ({
           longitude,
           latitude,
         );
+        console.log(shopData);
         if (isItFirst) {
           setLastPage(shopData.data.total_page);
         }
         setData(data.concat(shopData.data.contents));
         setPage(page => page + 1);
       } catch (e: any) {
-        if (e.response.status === 401) {
+        console.log(e.response.status === 401);
+        console.log(e.response.data.code === 'A0002');
+        if (e.response.status === 401 && e.response.data.code === 'A0002') {
           await getTokenAndRefresh();
-          // getData(true);
+          getData(true);
         }
       }
     }
@@ -98,8 +105,18 @@ const Home = ({
         latitude,
       );
       setData(shopData.data.contents);
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      console.log(e.response.status === 401);
+      console.log(e.response.data.code === 'A0002');
+      if (e.response.status === 401 && e.response.data.code === 'A0002') {
+        const data = await getTokenAndRefresh();
+        if (data) {
+          dispatch(login(true));
+        } else {
+          dispatch(login(false));
+        }
+        getData(true);
+      }
     } finally {
       setRefreshing(false);
       setDisabled(false);
@@ -108,7 +125,6 @@ const Home = ({
   };
 
   useEffect(() => {
-    // _getData();
     setOptions({
       headerTitle: () => (
         <View style={{paddingHorizontal: 0}}>
@@ -117,8 +133,8 @@ const Home = ({
       ),
       title: '',
     });
+
     geoLocation();
-    // get();
   }, []);
 
   useEffect(() => {

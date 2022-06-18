@@ -42,6 +42,8 @@ const Root = () => {
       await EncryptedStorage.setItem('accessToken', accessToken);
       await setToken();
       const {data} = await getMyInfo();
+      console.log('내 데이터');
+      console.log(data.data);
       dispatch(setUserInfo(data.data));
       dispatch(login(true));
     } catch (e: any) {

@@ -42,7 +42,7 @@ export type Shop = {
       }[]
     | null;
   styles: Style[];
-  images: null;
+  images: {name: string}[];
   liked: boolean;
   likes: number;
 };

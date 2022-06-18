@@ -9,6 +9,7 @@ import {
   Linking,
   Share,
   Alert,
+  ImageBackground,
 } from 'react-native';
 import React, {useCallback, useEffect, useState, useRef} from 'react';
 import styled from 'styled-components/native';
@@ -90,7 +91,7 @@ const DetailTitle = styled.View`
 `;
 
 const DetailTitleText = styled.Text`
-  font-size: 22px;
+  font-size: 17px;
   font-weight: 900;
   color: black;
 `;
@@ -243,7 +244,6 @@ const Detail = ({
     try {
       const {data: DetailData} = await getShopByIdx(idx);
       setData(DetailData.data);
-      console.log(DetailData.data.styles[0].images);
     } catch (e) {
       console.log(e);
     }
@@ -319,7 +319,7 @@ const Detail = ({
         <DetailImage
           height={Dimensions.get('window').height / 4}
           source={{
-            uri: 'https://ms-housing.kr/data/file/commercial_gallery/238359480_9WMSZO5G_bd5c18f2abe382fb72c35adeda10747fee1c6302.JPG',
+            uri: `https://junggam.click/api/v1/shops/mainImage/${data.shopMainImage.name}`,
           }}></DetailImage>
         <DetailContent>
           <DropShadow
@@ -421,17 +421,29 @@ const Detail = ({
             <View
               style={{
                 width: '100%',
-                height: 200,
+
                 marginTop: 10,
               }}>
-              <Image
-                style={{
-                  width: '100%',
-                  height: '100%',
-                }}
-                source={{
-                  uri: 'https://mblogthumb-phinf.pstatic.net/20130212_168/lulueyelash2_1360656212622FtqN5_JPEG/%C1%A9%B3%D7%C0%CF%BE%C6%C6%AE%B0%A1%B0%DD2.jpg?type=w2',
-                }}></Image>
+              {data.images.length === 0 ? (
+                <View
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: 100,
+                  }}>
+                  <Text>가격표 이미지 데이터가 없습니다.</Text>
+                </View>
+              ) : (
+                <ImageBackground
+                  style={{
+                    width: '100%',
+                    height: 200,
+                  }}
+                  source={{
+                    uri: `https://junggam.click/api/v1/shops/images/${data.images[0].name}`,
+                  }}
+                  resizeMode="contain"></ImageBackground>
+              )}
             </View>
           </Section>
           <SectionBar />
@@ -443,9 +455,20 @@ const Detail = ({
 
                 marginTop: 10,
               }}>
-              {data.tags?.map(e => (
-                <KeyWordsText key={e.idx}># {e.name}</KeyWordsText>
-              ))}
+              {data.tags?.length !== 0 ? (
+                data.tags?.map(e => (
+                  <KeyWordsText key={e.idx}># {e.name}</KeyWordsText>
+                ))
+              ) : (
+                <View
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: 100,
+                  }}>
+                  <Text>키워드 데이터가 없습니다.</Text>
+                </View>
+              )}
             </View>
           </Section>
           <SectionBar />
@@ -456,15 +479,26 @@ const Detail = ({
                 width: '100%',
                 marginTop: 10,
               }}>
-              <SafeAreaView style={{flex: 1}}>
-                <FlatList
-                  data={data.styles}
-                  ItemSeparatorComponent={() => <View style={{width: 10}} />}
-                  renderItem={renderItem}
-                  keyExtractor={(item, index) => index.toString()}
-                  horizontal
-                />
-              </SafeAreaView>
+              {data.styles.length === 0 ? (
+                <View
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: 100,
+                  }}>
+                  <Text>스타일 데이터가 없습니다.</Text>
+                </View>
+              ) : (
+                <SafeAreaView style={{flex: 1}}>
+                  <FlatList
+                    data={data.styles}
+                    ItemSeparatorComponent={() => <View style={{width: 10}} />}
+                    renderItem={renderItem}
+                    keyExtractor={(item, index) => index.toString()}
+                    horizontal
+                  />
+                </SafeAreaView>
+              )}
             </View>
           </Section>
           <SectionBar />

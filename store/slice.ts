@@ -1,4 +1,5 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import {UserInfo} from '../types';
 
 export type initialStateProps = {
@@ -40,9 +41,33 @@ const {actions, reducer} = createSlice({
         phone: phone,
       },
     }),
+    reset: () => ({
+      userInfo: {
+        idx: 0,
+        email: '',
+        phone: '',
+        oauth: '',
+        createdAt: '',
+      },
+      isLoggedIn: false,
+    }),
   },
 });
 
-export const {login, setUserInfo, setDigit} = actions;
+export const {login, setUserInfo, setDigit, reset} = actions;
+
+export function logout() {
+  return async (dispatch, getState: Function) => {
+    try {
+      await EncryptedStorage.clear();
+      dispatch(reset());
+      const {isLoggedIn} = getState();
+      console.log(isLoggedIn);
+    } catch (e) {
+      console.log(e);
+    }
+    return null;
+  };
+}
 
 export default reducer;
