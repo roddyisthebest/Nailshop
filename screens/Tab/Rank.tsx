@@ -44,7 +44,7 @@ const Rank = ({
         }
         setData(data.concat(shopData.data.contents));
         setPage(page => page + 1);
-      } catch (e) {
+      } catch (e: any) {
         if (e.response.status === 401 && e.response.data.code === 'A0002') {
           const data = await getTokenAndRefresh();
           if (!data) {

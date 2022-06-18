@@ -47,20 +47,12 @@ const Login = ({
 }: {
   navigation: {navigate: Function};
 }) => {
-  const dispatch = useDispatch();
-
-  const signIn = () => {
-    dispatch(login(true));
-  };
-
   return (
     <Container>
       <LogoImage
         width={120}
         height={120}
-        source={{
-          uri: 'https://st2.depositphotos.com/1157310/11458/v/600/depositphotos_114581808-stock-illustration-nail-technician-concept.jpg',
-        }}
+        source={require('../../assets/img/nailShopLogo.png')}
       />
       <View>
         <Button

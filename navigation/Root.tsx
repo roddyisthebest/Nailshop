@@ -45,11 +45,13 @@ const Root = () => {
       dispatch(setUserInfo(data.data));
       dispatch(login(true));
     } catch (e: any) {
-      if (e.response.status === 401) {
+      if (e.response.status === 401 && e.response.data.code === 'A0002') {
         Alert.alert('토큰이 만료되었습니다. 다시 로그인해주세요.');
       }
     } finally {
-      setLoading(false);
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
     }
   }, [dispatch]);
 
@@ -62,10 +64,8 @@ const Root = () => {
   return loading ? (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <Image
-        source={{
-          uri: 'https://st2.depositphotos.com/1157310/11458/v/600/depositphotos_114581808-stock-illustration-nail-technician-concept.jpg',
-        }}
-        style={{width: 80, height: 80}}></Image>
+        source={require('../assets/img/nailShopLogo.png')}
+        style={{width: 150, height: 150}}></Image>
     </View>
   ) : (
     <Nav.Navigator
