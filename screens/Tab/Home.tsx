@@ -45,7 +45,9 @@ const Home = ({
         setLongitude(longitude);
       },
       error => {
-        console.log(error.code, error.message);
+        setLatitude(37.5666805);
+        setLongitude(126.9784147);
+        Alert.alert('서울시 시청 위치 기준으로 샵 정보를 가져옵니다.');
       },
       {enableHighAccuracy: false, timeout: 15000},
     );
