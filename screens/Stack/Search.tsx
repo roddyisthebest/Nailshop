@@ -36,7 +36,7 @@ const SearchBar = styled.View`
 const Input = styled.TextInput`
   flex: 1;
   padding: 0;
-  font-size: 13px;
+  font-size: 10px;
   padding-right: 10px;
 `;
 
@@ -159,25 +159,25 @@ const Search = ({
         <SearchBar>
           <Pressable
             style={{
-              alignContent: 'center',
-              justifyContent: 'center',
+              alignItems: 'center',
+              justifyContent: 'space-between',
               marginRight: 10,
+              flexDirection: 'row',
+              height: '100%',
             }}
             onPress={() => {
               setPopup(true);
             }}>
-            <Icon name="caret-down" size={12} color="#767677"></Icon>
-          </Pressable>
-
-          <View
-            style={{
-              alignItems: 'flex-start',
-              justifyContent: 'flex-start',
-            }}>
-            <Text style={{fontSize: 13, color: 'black', paddingRight: 10}}>
+            <Icon
+              name="caret-down"
+              size={10}
+              color="#767677"
+              style={{marginRight: 5}}></Icon>
+            <Text style={{fontSize: 10, color: 'black', paddingRight: 5}}>
               {searchKey}
             </Text>
-          </View>
+          </Pressable>
+
           <View
             style={{
               width: 1,
@@ -194,7 +194,7 @@ const Search = ({
             onPress={() => {
               goBack();
             }}>
-            <Text style={{fontSize: 13, color: '#767677', paddingRight: 10}}>
+            <Text style={{fontSize: 10, color: '#767677', paddingRight: 10}}>
               취소
             </Text>
           </Button>

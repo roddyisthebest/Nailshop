@@ -13,7 +13,7 @@ const Section = styled.View<{isItLast: boolean}>`
 
 const HeaderText = styled.Text`
   color: black;
-  font-weight: 900;
+  font-weight: 700;
   font-size: 25px;
   margin-bottom: 15px;
 `;

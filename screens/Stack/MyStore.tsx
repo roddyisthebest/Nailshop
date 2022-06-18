@@ -42,7 +42,6 @@ const MyStore = ({
 
   const getData = async (isItFirst: boolean) => {
     if (!disabled) {
-      setLoading(true);
       try {
         const {data: shopData} = await getShopList(page, true, false, 0, 0);
         if (isItFirst) {

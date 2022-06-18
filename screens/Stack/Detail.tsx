@@ -96,7 +96,7 @@ const DetailTitle = styled.View`
 
 const DetailTitleText = styled.Text`
   font-size: 17px;
-  font-weight: 900;
+  font-weight: 700;
   color: black;
 `;
 
@@ -355,7 +355,11 @@ const Detail = ({
             }}>
             <DetailTitleWrapper>
               <DetailTitle>
-                <DetailTitleText>{data.name}</DetailTitleText>
+                <DetailTitleText>
+                  {data.name.length < 15
+                    ? data.name
+                    : data.name.slice(0, 15) + '...'}
+                </DetailTitleText>
                 <LoveButton
                   disabled={likeLoading}
                   backgroundColor={like ? 'white' : 'red'}

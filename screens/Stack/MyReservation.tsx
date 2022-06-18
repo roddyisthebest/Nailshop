@@ -40,9 +40,7 @@ const MyReservation = ({
   );
 
   const getData = async (isItFirst: boolean) => {
-    console.log('reRender');
     if (!disabled) {
-      setLoading(true);
       try {
         const {data: reservation} = await getReservationList(page);
         if (isItFirst) {
