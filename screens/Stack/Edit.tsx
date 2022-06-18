@@ -1,10 +1,12 @@
-import {Pressable, Text, View} from 'react-native';
+import {Alert, Pressable, Text, View} from 'react-native';
 import React, {useCallback, useEffect, useId, useState} from 'react';
 import styled from 'styled-components/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useDispatch, useSelector} from 'react-redux';
-import {initialStateProps, setDigit} from '../../store/slice';
+import {initialStateProps, reset, setDigit} from '../../store/slice';
 import {changePhoneNumber} from '../../api/user';
+import getTokenAndRefresh from '../../util/getToken';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 const UserImageWrapper = styled.View`
   align-items: center;
@@ -66,8 +68,18 @@ const Edit = ({
       await changePhoneNumber(phone);
       dispatch(setDigit(phone));
       goBack();
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      if (e.response.status === 401 && e.response.data.code === 'A0002') {
+        const data = await getTokenAndRefresh();
+        if (!data) {
+          await EncryptedStorage.clear();
+          dispatch(reset());
+        } else {
+          changePhone(phone);
+        }
+      } else {
+        Alert.alert('에러입니다. 다시 로그인해주세요.');
+      }
     }
   }, []);
 

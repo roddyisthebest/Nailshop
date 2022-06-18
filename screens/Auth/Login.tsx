@@ -53,38 +53,6 @@ const Login = ({
     dispatch(login(true));
   };
 
-  // function OpenURLButton({url, children}: {url: string; children: string}) {
-  //   const handlePress = useCallback(async () => {
-  //     // Checking if the link is supported for links with custom URL scheme.
-  //     const supported = await Linking.canOpenURL(url);
-  //     await Linking.openURL(url);
-  //     if (supported) {
-  //       // Opening the link with some app, if the URL scheme is "http" the web link should be opened
-  //       // by some browser in the mobile
-  //       await Linking.openURL(url);
-  //     } else {
-  //       Alert.alert(`Don't know how to open this URL: ${url}`);
-  //     }
-  //   }, [url]);
-
-  //   return (
-  //     <Button
-  //       backColor="#FBE950"
-  //       onPress={handlePress}
-  //       style={{width: Dimensions.get('window').width / 1.5}}>
-  //       <ButtonLogoWrapper>
-  //         <LogoImage
-  //           width={26}
-  //           height={26}
-  //           source={require('../../assets/img/KakaoTalk_logo.png')}
-  //         />
-  //       </ButtonLogoWrapper>
-  //       <ButtonNameWrapper>
-  //         <ButtonText color="#372929">{children}</ButtonText>
-  //       </ButtonNameWrapper>
-  //     </Button>
-  //   );
-  // }
   return (
     <Container>
       <LogoImage

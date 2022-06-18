@@ -5,6 +5,7 @@ import {
   FlatList,
   Dimensions,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import SearchBar from '../../components/SearchBar';
@@ -17,7 +18,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import {setToken} from '../../api';
 import {api} from '../../api';
 import {useDispatch} from 'react-redux';
-import {login} from '../../store/slice';
+import {login, reset} from '../../store/slice';
 const Home = ({
   navigation: {navigate, setOptions},
 }: {
@@ -77,11 +78,16 @@ const Home = ({
         setData(data.concat(shopData.data.contents));
         setPage(page => page + 1);
       } catch (e: any) {
-        console.log(e.response.status === 401);
-        console.log(e.response.data.code === 'A0002');
         if (e.response.status === 401 && e.response.data.code === 'A0002') {
-          await getTokenAndRefresh();
-          getData(true);
+          const data = await getTokenAndRefresh();
+          if (!data) {
+            await EncryptedStorage.clear();
+            dispatch(reset());
+          } else {
+            getData(true);
+          }
+        } else {
+          Alert.alert('에러입니다. 다시 로그인해주세요.');
         }
       }
     }
@@ -106,16 +112,16 @@ const Home = ({
       );
       setData(shopData.data.contents);
     } catch (e: any) {
-      console.log(e.response.status === 401);
-      console.log(e.response.data.code === 'A0002');
       if (e.response.status === 401 && e.response.data.code === 'A0002') {
         const data = await getTokenAndRefresh();
-        if (data) {
-          dispatch(login(true));
+        if (!data) {
+          await EncryptedStorage.clear();
+          dispatch(reset());
         } else {
-          dispatch(login(false));
+          _handleRefresh();
         }
-        getData(true);
+      } else {
+        Alert.alert('에러입니다. 다시 로그인해주세요.');
       }
     } finally {
       setRefreshing(false);

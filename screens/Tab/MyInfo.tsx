@@ -1,4 +1,4 @@
-import {View, Pressable} from 'react-native';
+import {View, Pressable, Alert} from 'react-native';
 import React from 'react';
 import styled from 'styled-components/native';
 import NavigationButton from '../../components/NavigateButton';
@@ -39,7 +39,7 @@ const MyInfo = ({
       await EncryptedStorage.clear();
       dispatch(reset());
     } catch (e) {
-      console.log(e);
+      Alert.alert('EncryptedStorage 에러입니다. 다시 로그인해주세요.');
     }
   };
 

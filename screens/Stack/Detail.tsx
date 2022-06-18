@@ -25,6 +25,10 @@ import {
   postShopLike,
   deleteShopLike,
 } from '../../api/shop';
+import getTokenAndRefresh from '../../util/getToken';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {reset} from '../../store/slice';
+import {useDispatch} from 'react-redux';
 
 const Container = styled.ScrollView`
   flex: 1;
@@ -182,26 +186,17 @@ const Detail = ({
   route: {params: {idx: number}};
   navigation: {navigate: Function};
 }) => {
+  const dispatch = useDispatch();
+
   const [like, setLike] = useState<boolean>(false);
   const [data, setData] = useState<Shop>();
   const [phone, setPhone] = useState<string>();
   const [likeLoading, setLikeLoading] = useState<boolean>(false);
   const [popup, setPopup] = useState<boolean>(false);
-  // const [uri, setUri] = useState<string>('');
-  // const [styleLike, setStyleLike] = useState<boolean>(false);
+
   const [style, setStyle] = useState<Style[]>([]);
   const [styleIndex, setStyleIndex] = useState<number>(0);
   const [render, setRender] = useState<boolean>(false);
-  // const getImage = useCallback(async () => {
-  //   try {
-  //     const {data} =await axios.get(
-  //       'https://gscaltexmediahub.com/wp-content/uploads/2018/04/campaign-advertisement-made-by-kids-180413-2.jpg',
-  //     );
-  //     setFetchImage(true);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // }, []);
 
   const shareShop = useCallback(async (name: string, url: string) => {
     try {
@@ -210,7 +205,7 @@ const Detail = ({
         title: name,
       });
     } catch (e) {
-      console.log(e);
+      Alert.alert('모종의 이유로 공유가 불가합니다.');
     }
   }, []);
 
@@ -218,25 +213,25 @@ const Detail = ({
     try {
       if (!liked) {
         await postShopLike(parseInt(idx));
-        // setStyle(
-        //   style.splice(styleIndex, 1, {...style[styleIndex], liked: true}),
-        // );
         style.splice(styleIndex, 1, {...style[styleIndex], liked: !liked});
         setRender(!render);
-        // setStyle(copyData);
-        // setStyle({...style, liked: true});
       } else {
         await deleteShopLike(parseInt(idx));
         style.splice(styleIndex, 1, {...style[styleIndex], liked: !like});
         setRender(!render);
-
-        // setStyle(
-        //   style.splice(styleIndex, 1, {...style[styleIndex], liked: false}),
-        // );
-        // setStyle({...style, liked: false});
       }
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      if (e.response.status === 401 && e.response.data.code === 'A0002') {
+        const data = await getTokenAndRefresh();
+        if (!data) {
+          await EncryptedStorage.clear();
+          dispatch(reset());
+        } else {
+          setStyleLike(liked, idx);
+        }
+      } else {
+        Alert.alert('에러입니다. 다시 로그인해주세요.');
+      }
     }
   };
 
@@ -244,8 +239,18 @@ const Detail = ({
     try {
       const {data: DetailData} = await getShopByIdx(idx);
       setData(DetailData.data);
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      if (e.response.status === 401 && e.response.data.code === 'A0002') {
+        const data = await getTokenAndRefresh();
+        if (!data) {
+          await EncryptedStorage.clear();
+          dispatch(reset());
+        } else {
+          getData();
+        }
+      } else {
+        Alert.alert('에러입니다. 다시 로그인해주세요.');
+      }
     }
   };
   // https://junggam.click/api/v1/shops/styles/images/
@@ -275,8 +280,18 @@ const Detail = ({
         console.log(data);
         setLike(false);
       }
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      if (e.response.status === 401 && e.response.data.code === 'A0002') {
+        const data = await getTokenAndRefresh();
+        if (!data) {
+          await EncryptedStorage.clear();
+          dispatch(reset());
+        } else {
+          toggleLike();
+        }
+      } else {
+        Alert.alert('에러입니다. 다시 로그인해주세요.');
+      }
     } finally {
       setLikeLoading(false);
     }
@@ -288,9 +303,18 @@ const Detail = ({
         const {data} = await postReservation(idx, type);
         console.log(data);
         Alert.alert(`${type}을 이용한 예약이 완료되었습니다.`);
-      } catch (e) {
-        Alert.alert(`${type}을 이용한 예약이 실패하였습니다.`);
-        console.log(e);
+      } catch (e: any) {
+        if (e.response.status === 401 && e.response.data.code === 'A0002') {
+          const data = await getTokenAndRefresh();
+          if (!data) {
+            await EncryptedStorage.clear();
+            dispatch(reset());
+          } else {
+            makeReservation(type);
+          }
+        } else {
+          Alert.alert('에러입니다. 다시 로그인해주세요.');
+        }
       }
     },
     [],

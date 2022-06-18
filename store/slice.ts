@@ -56,18 +56,4 @@ const {actions, reducer} = createSlice({
 
 export const {login, setUserInfo, setDigit, reset} = actions;
 
-export function logout() {
-  return async (dispatch, getState: Function) => {
-    try {
-      await EncryptedStorage.clear();
-      dispatch(reset());
-      const {isLoggedIn} = getState();
-      console.log(isLoggedIn);
-    } catch (e) {
-      console.log(e);
-    }
-    return null;
-  };
-}
-
 export default reducer;

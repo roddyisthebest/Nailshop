@@ -5,17 +5,24 @@ import {
   FlatList,
   ActivityIndicator,
   Text,
+  Alert,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import StoreBox from '../../components/StoreBox';
 import {getShopList, getStyleList} from '../../api/shop';
 import {Shop, Style} from '../../types/index';
+import getTokenAndRefresh from '../../util/getToken';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {useDispatch} from 'react-redux';
+import {reset} from '../../store/slice';
 
 const MyStyle = ({
   navigation: {navigate, setOptions},
 }: {
   navigation: {navigate: Function; setOptions: Function};
 }) => {
+  const dispatch = useDispatch();
+
   const [loading, setLoading] = useState<boolean>(true);
   const [data, setData] = useState<Style[]>([]);
   const [page, setPage] = useState<number>(0);
@@ -42,8 +49,18 @@ const MyStyle = ({
         }
         setData(data.concat(styleData.data.contents));
         setPage(page => page + 1);
-      } catch (e) {
-        console.log(e);
+      } catch (e: any) {
+        if (e.response.status === 401 && e.response.data.code === 'A0002') {
+          const data = await getTokenAndRefresh();
+          if (!data) {
+            await EncryptedStorage.clear();
+            dispatch(reset());
+          } else {
+            getData(true);
+          }
+        } else {
+          Alert.alert('에러입니다. 다시 로그인해주세요.');
+        }
       } finally {
         setLoading(false);
       }
@@ -63,8 +80,18 @@ const MyStyle = ({
       setPage(0);
       const {data: styleData} = await getStyleList(0);
       setData(styleData.data.contents);
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      if (e.response.status === 401 && e.response.data.code === 'A0002') {
+        const data = await getTokenAndRefresh();
+        if (!data) {
+          await EncryptedStorage.clear();
+          dispatch(reset());
+        } else {
+          _handleRefresh();
+        }
+      } else {
+        Alert.alert('에러입니다. 다시 로그인해주세요.');
+      }
     } finally {
       setRefreshing(false);
       setDisabled(false);

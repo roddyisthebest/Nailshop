@@ -4,18 +4,24 @@ import {
   View,
   ActivityIndicator,
   Dimensions,
+  Alert,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import SearchBar from '../../components/SearchBar';
 import RankColumn from '../../components/RankColumn';
 import {getShopRanking} from '../../api/shop';
 import {Shop} from '../../types';
+import getTokenAndRefresh from '../../util/getToken';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {reset} from '../../store/slice';
+import {useDispatch} from 'react-redux';
 
 const Rank = ({
   navigation: {setOptions},
 }: {
   navigation: {setOptions: Function};
 }) => {
+  const dispatch = useDispatch();
   const [data, setData] = useState<Shop[]>([]);
   const [page, setPage] = useState<number>(0);
   const [lastPage, setLastPage] = useState<number>();
@@ -28,17 +34,7 @@ const Rank = ({
       idx={item.idx}
       likes={item.likes}></RankColumn>
   );
-  // const _getData = async () => {
-  //   try {
-  //     const {data: imageData} = await axios.get(
-  //       `https://jsonplaceholder.typicode.com/photos?_limit=13?_page=${page}`,
-  //     );
-  //     setData(data.concat(imageData));
-  //     setPage(page + 1);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // };
+
   const getData = async (isItFirst: boolean) => {
     if (!disabled) {
       try {
@@ -49,7 +45,17 @@ const Rank = ({
         setData(data.concat(shopData.data.contents));
         setPage(page => page + 1);
       } catch (e) {
-        console.log(e);
+        if (e.response.status === 401 && e.response.data.code === 'A0002') {
+          const data = await getTokenAndRefresh();
+          if (!data) {
+            await EncryptedStorage.clear();
+            dispatch(reset());
+          } else {
+            getData(true);
+          }
+        } else {
+          Alert.alert('에러입니다. 다시 로그인해주세요.');
+        }
       }
     }
   };
@@ -66,8 +72,18 @@ const Rank = ({
       setPage(0);
       const {data: shopData} = await getShopRanking(0);
       setData(shopData.data.contents);
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      if (e.response.status === 401 && e.response.data.code === 'A0002') {
+        const data = await getTokenAndRefresh();
+        if (!data) {
+          await EncryptedStorage.clear();
+          dispatch(reset());
+        } else {
+          _handleRefresh();
+        }
+      } else {
+        Alert.alert('에러입니다. 다시 로그인해주세요.');
+      }
     } finally {
       setRefreshing(false);
       setDisabled(false);

@@ -5,17 +5,24 @@ import {
   FlatList,
   ActivityIndicator,
   Text,
+  Alert,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import StoreBox from '../../components/StoreBox';
 import {getShopList} from '../../api/shop';
 import {Shop} from '../../types/index';
+import {useDispatch} from 'react-redux';
+import getTokenAndRefresh from '../../util/getToken';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {reset} from '../../store/slice';
 
 const MyStore = ({
   navigation: {navigate, setOptions},
 }: {
   navigation: {navigate: Function; setOptions: Function};
 }) => {
+  const dispatch = useDispatch();
+
   const [loading, setLoading] = useState<boolean>(true);
   const [data, setData] = useState<Shop[]>([]);
   const [page, setPage] = useState<number>(0);
@@ -35,6 +42,7 @@ const MyStore = ({
 
   const getData = async (isItFirst: boolean) => {
     if (!disabled) {
+      setLoading(true);
       try {
         const {data: shopData} = await getShopList(page, true, false, 0, 0);
         if (isItFirst) {
@@ -42,8 +50,18 @@ const MyStore = ({
         }
         setData(data.concat(shopData.data.contents));
         setPage(page => page + 1);
-      } catch (e) {
-        console.log(e);
+      } catch (e: any) {
+        if (e.response.status === 401 && e.response.data.code === 'A0002') {
+          const data = await getTokenAndRefresh();
+          if (!data) {
+            await EncryptedStorage.clear();
+            dispatch(reset());
+          } else {
+            getData(true);
+          }
+        } else {
+          Alert.alert('에러입니다. 다시 로그인해주세요.');
+        }
       } finally {
         setLoading(false);
       }
@@ -62,8 +80,18 @@ const MyStore = ({
       setPage(0);
       const {data: shopData} = await getShopList(0, true, false, 0, 0);
       setData(shopData.data.contents);
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      if (e.response.status === 401 && e.response.data.code === 'A0002') {
+        const data = await getTokenAndRefresh();
+        if (!data) {
+          await EncryptedStorage.clear();
+          dispatch(reset());
+        } else {
+          _handleRefresh();
+        }
+      } else {
+        Alert.alert('에러입니다. 다시 로그인해주세요.');
+      }
     } finally {
       setRefreshing(false);
       setDisabled(false);

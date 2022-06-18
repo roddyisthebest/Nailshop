@@ -1,3 +1,4 @@
+import {Alert} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 // import {useDispatch} from 'react-redux';
 import {setToken} from '../api';
@@ -21,9 +22,12 @@ const getTokenAndRefresh = async () => {
     const {data} = await getMyInfo();
     return true;
   } catch (e: any) {
-    if (e.response.status === 401) {
-      return false;
+    if (e.response.status === 401 && e.response.data.code === 'A0002') {
+      Alert.alert('토큰이 만료되었습니다. 다시 로그인해주세요.');
+    } else {
+      Alert.alert('에러입니다. 다시 로그인해주세요.');
     }
+    return false;
   }
 };
 export default getTokenAndRefresh;

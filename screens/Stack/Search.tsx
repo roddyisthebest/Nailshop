@@ -11,11 +11,15 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {useDispatch} from 'react-redux';
 import styled from 'styled-components/native';
 import {searchShopList} from '../../api/shop';
 import StoreBox from '../../components/StoreBox';
+import {reset} from '../../store/slice';
 import {Shop} from '../../types';
+import getTokenAndRefresh from '../../util/getToken';
 
 const SearchBar = styled.View`
   background-color: #eeefef;
@@ -76,6 +80,7 @@ const Search = ({
   const [popup, setPopup] = useState<boolean>(false);
   const [disabled, setDisabled] = useState(false);
 
+  const dispatch = useDispatch();
   useEffect(() => {
     setOptions({
       headerShown: false,
@@ -92,8 +97,18 @@ const Search = ({
         );
         setData(data.concat(searchData.data.contents));
         setPage(page => page + 1);
-      } catch (e) {
-        console.log(e);
+      } catch (e: any) {
+        if (e.response.status === 401 && e.response.data.code === 'A0002') {
+          const data = await getTokenAndRefresh();
+          if (!data) {
+            await EncryptedStorage.clear();
+            dispatch(reset());
+          } else {
+            getData();
+          }
+        } else {
+          Alert.alert('에러입니다. 다시 로그인해주세요.');
+        }
       }
     }
   };
@@ -106,8 +121,18 @@ const Search = ({
       setLastPage(searchData.data.total_page);
       setPage(page => page + 1);
       setData(searchData.data.contents);
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      if (e.response.status === 401 && e.response.data.code === 'A0002') {
+        const data = await getTokenAndRefresh();
+        if (!data) {
+          await EncryptedStorage.clear();
+          dispatch(reset());
+        } else {
+          onSubmit();
+        }
+      } else {
+        Alert.alert('에러입니다. 다시 로그인해주세요.');
+      }
     } finally {
       setLoading(false);
     }
