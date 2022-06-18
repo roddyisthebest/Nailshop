@@ -7,6 +7,8 @@ export type initialStateProps = {
   isLoggedIn: boolean;
 };
 
+// 리덕스의 내부구조입니다.
+
 const {actions, reducer} = createSlice({
   name: 'redux',
   initialState: {

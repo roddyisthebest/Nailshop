@@ -6,7 +6,11 @@ import {setToken} from '../../api';
 import {useDispatch} from 'react-redux';
 import {login, setUserInfo} from '../../store/slice';
 import {getMyInfo} from '../../api/user';
-const Record = ({
+
+// 매개변수로 받은 url로 webView를 이용하여 특정 웹사이트에 접속하여 accessToken,refreshToken을 받고
+// 앱 내에 token들을 넣고 회원정보를 redux에 넣습니다.
+
+const SnsLogin = ({
   route: {
     params: {url},
   },
@@ -59,4 +63,4 @@ const Record = ({
   );
 };
 
-export default Record;
+export default SnsLogin;

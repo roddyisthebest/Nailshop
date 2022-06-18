@@ -1,12 +1,11 @@
 import {Alert} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-// import {useDispatch} from 'react-redux';
 import {setToken} from '../api';
 import {getAccessByRefresh, getMyInfo} from '../api/user';
-import {login, setUserInfo} from '../store/slice';
 
+// refreshToken을 통해 accessToken을 갱신하는 함수입니다.
+// refreshToken 마저 만료가 되면 로그인 페이지로 넘어가게끔 구현하였습니다.
 const getTokenAndRefresh = async () => {
-  console.log('refresh go');
   try {
     const refreshToken = await EncryptedStorage.getItem('refreshToken');
     if (!refreshToken) {

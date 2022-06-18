@@ -55,6 +55,10 @@ const StoreDetailButton = styled.Pressable`
   justify-content: space-evenly;
 `;
 
+// MyReservation 페이지내에서 사용하는 컴포넌트입니다.
+// 내가 예약한 정보를 보여주는데 사용되는 하나의 Column 컴포넌트입니다.
+// 매개변수로 idx를 받아 해당 컴포넌트의 StoreDetailButton을 클릭하면 해당 idx의 detail 페이지로 이동합니다.
+
 const ReservationColumn = ({
   uri,
   name,

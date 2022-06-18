@@ -42,6 +42,11 @@ const ButtonText = styled.Text<{color: string}>`
   font-weight: 500;
   color: ${props => props.color};
 `;
+
+// 구글,카카오,페이스북 로그인 기능을 제공하는 로그인 페이지입니다.
+// 실제적인 로그인은 SnsLogin page에서 이루어집니다.
+// SnsLogin 페이지로 이동시키는 버튼들로 구성되어있습니다. (이동할 때 특정 url을 보내어 SnsLogin내에서 웹뷰로 로그인이 이루어집니다.)
+
 const Login = ({
   navigation: {navigate},
 }: {

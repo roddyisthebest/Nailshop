@@ -9,6 +9,8 @@ import Search from '../screens/Stack/Search';
 import {Text} from 'react-native';
 const NativeStack = createNativeStackNavigator();
 
+// stack에 해당되는 네비게이션 구조입니다. Edit,MyStore,MyStyle,MyReservation 페이지들이 이 네비게이션에 포함됩니다.
+
 const Stack = () => (
   <NativeStack.Navigator
     screenOptions={{

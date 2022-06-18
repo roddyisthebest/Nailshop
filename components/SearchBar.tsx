@@ -25,6 +25,9 @@ const Button = styled.Pressable`
   justify-content: center;
 `;
 
+// Home,Rank 페이지내에서 사용하는 컴포넌트입니다.
+// 검색 페이지로 이동시키게 하는 컴포넌트입니다.
+
 const SearchBar = ({width}: {width: number}) => {
   const onSubmit = () => {};
   const navigation = useNavigation<

@@ -24,6 +24,8 @@ const LogoutText = styled.Text`
   font-weight: 500;
 `;
 
+// (내 정보와 관련된 페이지들로 이동시켜주는) 네비게이션 버튼들로 이루어진 페이지입니다.
+
 const MyInfo = ({
   navigation: {navigate},
 }: {

@@ -16,6 +16,9 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import {reset} from '../../store/slice';
 import {useDispatch} from 'react-redux';
 
+// 찜이 많은 순서대로 샵 정보들이 제공되는 페이지입니다.(페이징 처리)
+// 샵들의 랭크정보를 확인할 수 있습니다.
+
 const Rank = ({
   navigation: {setOptions},
 }: {

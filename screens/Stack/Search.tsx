@@ -66,6 +66,9 @@ const PopupButtonBox = styled.Pressable`
   justify-content: center;
 `;
 
+// 특정 키워드로 특정 샵 검색 기능이 제공되는 페이지입니다. (페이징 처리)
+// 이름, 위치, 태그대로 검색이 가능합니다.
+
 const Search = ({
   navigation: {setOptions, goBack},
 }: {

@@ -177,6 +177,9 @@ const ContactButton = styled.TouchableOpacity`
   justify-content: center;
 `;
 
+// 특정 샵의 디테일 페이지입니다.
+// 정보들을 열람할 수 있고 샵 찜하기, 스타일찜하기, 예약하기 기능들이 제공됩니다.
+
 const Detail = ({
   navigation: {navigate},
   route: {
@@ -356,9 +359,9 @@ const Detail = ({
             <DetailTitleWrapper>
               <DetailTitle>
                 <DetailTitleText>
-                  {data.name.length < 15
+                  {data.name.length < 10
                     ? data.name
-                    : data.name.slice(0, 15) + '...'}
+                    : data.name.slice(0, 10) + '...'}
                 </DetailTitleText>
                 <LoveButton
                   disabled={likeLoading}

@@ -23,11 +23,15 @@ export type LoggedInParamList = {
     params: any;
   };
 };
+// 앱의 네비게이션 구조를 이 Root.tsx에서 규정합니다.
+// 네비게이션은 Auth (login.tsx, SnsLogin.tsx) / Stack (Detail.tsx, Edit.tsx, MyReservation.tsx, MyStore.tsx, MyStyle.tsx, Search.tsx) / Tabs (Home.tsx, MyInfo.tsx, Rank.tsx) 로 이루어져 있습니다.
 
 const Root = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState<boolean>(true);
 
+  // 처음 앱을 실행할때 앱 내에 저장된 refreshToken이 있다면 로그인 하지 않고 바로 refreshToken을 이용하여 accessToken을 가져오는 함수입니다.
+  // 당연히 refreshToken이 앱 내에 없다면 로그인 페이지로 이동시킵니다.
   const getTokenAndRefresh = useCallback(async () => {
     try {
       const refreshToken = await EncryptedStorage.getItem('refreshToken');
@@ -58,6 +62,8 @@ const Root = () => {
   useEffect(() => {
     getTokenAndRefresh();
   }, []);
+
+  // redux내에 있는 isLoggedIn 값에 따라 로그인이 되었는지 안되어있는지를 결정하여 네비게이션 컴포넌트를 분기하여 리턴합니다.
   const {isLoggedIn} = useSelector((state: initialStateProps) => ({
     isLoggedIn: state.isLoggedIn,
   }));

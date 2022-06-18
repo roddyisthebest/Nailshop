@@ -15,10 +15,14 @@ import {Shop} from '../../types/index';
 import Geolocation from '@react-native-community/geolocation';
 import getTokenAndRefresh from '../../util/getToken';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {setToken} from '../../api';
-import {api} from '../../api';
+
 import {useDispatch} from 'react-redux';
-import {login, reset} from '../../store/slice';
+import {reset} from '../../store/slice';
+
+// 유저의 위치에 기끼운 순서대로 샵의 리스트들이 제공되는 페이지입니다. (페이징 처리)
+// 위치권한을 허용하면 유저의 위치를 기반으로 샵 리스트들의 정보를 가져다줍니다.
+// 권한을 허용하지 않으면 서울시 시청을 기반으로 샵 리스트들의 정보를 가져다줍니다.
+
 const Home = ({
   navigation: {navigate, setOptions},
 }: {

@@ -2,6 +2,8 @@ import {AxiosResponse} from 'axios';
 
 import {api} from './index';
 
+// shop과 관련된 api 함수들입니다.
+
 const getShopList = (
   page: number,
   like: boolean,

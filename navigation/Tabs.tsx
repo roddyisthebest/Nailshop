@@ -6,6 +6,7 @@ import Rank from '../screens/Tab/Rank';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const Tab = createBottomTabNavigator();
+// Tabs 해당되는 네비게이션 구조입니다. Home, MyInfo, Rank 페이지들이 이 네비게이션에 포함됩니다.
 
 const Tabs = () => (
   <Tab.Navigator

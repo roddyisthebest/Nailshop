@@ -16,6 +16,8 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import {useDispatch} from 'react-redux';
 import {reset} from '../../store/slice';
 
+// 내가 찜한 스타일 리스트 열람 기능이 제공되는 페이지입니다.  (페이징 처리)
+
 const MyStyle = ({
   navigation: {navigate, setOptions},
 }: {

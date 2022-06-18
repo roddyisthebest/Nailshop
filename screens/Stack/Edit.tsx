@@ -49,6 +49,8 @@ const Input = styled.TextInput`
   font-size: 15px;
 `;
 
+// 회원정보를 열람 및 전화번호 수정기능이 제공되는 페이지입니다.
+
 const Edit = ({
   navigation: {setOptions, goBack},
 }: {
