@@ -69,7 +69,7 @@ const MyStyle = ({
 
   console.log(data);
   useEffect(() => {
-    if (lastPage && lastPage < page) {
+    if ((lastPage && lastPage < page) || (lastPage === 0 && page === 0)) {
       setDisabled(true);
     }
   }, [lastPage, page]);

@@ -40,6 +40,7 @@ const MyReservation = ({
   );
 
   const getData = async (isItFirst: boolean) => {
+    console.log('reRender');
     if (!disabled) {
       setLoading(true);
       try {
@@ -68,7 +69,7 @@ const MyReservation = ({
   };
 
   useEffect(() => {
-    if (lastPage && lastPage < page) {
+    if ((lastPage && lastPage < page) || (lastPage === 0 && page === 0)) {
       setDisabled(true);
     }
   }, [lastPage, page]);
@@ -117,7 +118,7 @@ const MyReservation = ({
           renderItem={renderItem}
           keyExtractor={(item, index) => index.toString()}
           onEndReached={() => {
-            getData(false);
+            getData(true);
           }}
           refreshing={refreshing}
           onRefresh={_handleRefresh}
