@@ -206,6 +206,7 @@ const Detail = ({
   const [render, setRender] = useState<boolean>(false);
 
   const [review, setReview] = useState<ReviewType[]>();
+  const [bookedBefore, setBookedBofore] = useState<boolean>(false);
   const shareShop = useCallback(async (name: string, url: string) => {
     try {
       await Share.share({
@@ -347,6 +348,37 @@ const Detail = ({
     }
   }, []);
 
+  const doReservatation = async (type: 'KAKAO' | 'PHONE' | 'MESSAGE') => {
+    try {
+      await makeReservation(type);
+
+      setBookedBofore(true);
+      if (type === 'KAKAO') {
+        Linking.openURL(`https://open.kakao.com/o/sP3g8xLd`);
+      } else if (type === 'PHONE') {
+        Linking.openURL(`tel:${phone}`);
+      } else if (type === 'MESSAGE') {
+        Linking.openURL(`sms:${phone}`);
+      }
+
+      setTimeout(() => {
+        Alert.alert(`${type} 이용한 예약이 완료되었습니다.`);
+      }, 1);
+    } catch (e: any) {
+      if (e.response.status === 401 && e.response.data.code === 'A0002') {
+        const data = await getTokenAndRefresh();
+        if (!data) {
+          await EncryptedStorage.clear();
+          dispatch(reset());
+        } else {
+          doReservatation(type);
+        }
+      } else {
+        Alert.alert('에러입니다. 다시 로그인해주세요.');
+      }
+    }
+  };
+
   useEffect(() => {
     getData();
     getReviewData();
@@ -361,6 +393,9 @@ const Detail = ({
       }
       if (data.styles) {
         setStyle(data.styles);
+      }
+      if (data.bookedBefore) {
+        setBookedBofore(data.bookedBefore);
       }
     }
   }, [data]);
@@ -542,7 +577,7 @@ const Detail = ({
                 onPress={() => {
                   navigate('Stacks', {
                     screen: 'Review',
-                    params: {idx, bookedBefore: data.bookedBefore},
+                    params: {idx, bookedBefore},
                   });
                 }}>
                 <Text style={{fontSize: 10}}>더보기</Text>
@@ -639,21 +674,13 @@ const Detail = ({
                 <>
                   <ContactButton
                     onPress={async () => {
-                      await makeReservation('PHONE');
-                      Linking.openURL(`tel:${phone}`);
-                      setTimeout(() => {
-                        Alert.alert(`phone을 이용한 예약이 완료되었습니다.`);
-                      }, 1);
+                      doReservatation('PHONE');
                     }}>
                     <Icon name="call" size={20} color="black" />
                   </ContactButton>
                   <ContactButton
                     onPress={async () => {
-                      await makeReservation('MESSAGE');
-                      Linking.openURL(`sms:${phone}`);
-                      setTimeout(() => {
-                        Alert.alert(`MESSAGE를 이용한 예약이 완료되었습니다.`);
-                      }, 1);
+                      doReservatation('MESSAGE');
                     }}>
                     <Icon name="chatbubble-ellipses" size={20} color="black" />
                   </ContactButton>
@@ -662,11 +689,7 @@ const Detail = ({
 
               <ContactButton
                 onPress={async () => {
-                  await makeReservation('KAKAO');
-                  Linking.openURL(`https://open.kakao.com/o/sP3g8xLd`);
-                  setTimeout(() => {
-                    Alert.alert(`KAKAO톡을 이용한 예약이 완료되었습니다.`);
-                  }, 1);
+                  doReservatation('KAKAO');
                 }}>
                 <Image
                   style={{width: '50%', height: '50%'}}
