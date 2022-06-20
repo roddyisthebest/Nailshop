@@ -70,7 +70,7 @@ const Root = () => {
   return loading ? (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <Image
-        source={require('../assets/img/nailShopLogo.png')}
+        source={require('../assets/img/logo.jpeg')}
         style={{width: 150, height: 150}}></Image>
     </View>
   ) : (

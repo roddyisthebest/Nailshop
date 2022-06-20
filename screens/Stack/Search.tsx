@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -23,7 +23,7 @@ import getTokenAndRefresh from '../../util/getToken';
 
 const SearchBar = styled.View`
   background-color: #eeefef;
-  padding: 10px 15px;
+  padding: 0px 15px;
   height: 38px;
   border-radius: 10px;
   display: flex;
@@ -36,7 +36,7 @@ const SearchBar = styled.View`
 const Input = styled.TextInput`
   flex: 1;
   padding: 0;
-  font-size: 10px;
+  font-size: 13px;
   padding-right: 10px;
 `;
 
@@ -77,7 +77,9 @@ const Search = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(0);
   const [lastPage, setLastPage] = useState<number>();
-  const [searchKey, setSearchKey] = useState<string>('name');
+  const [searchKey, setSearchKey] = useState<'address' | 'name' | 'tag'>(
+    'name',
+  );
   const [data, setData] = useState<Shop[]>([]);
   const [keyword, setKeyword] = useState<string>('');
   const [popup, setPopup] = useState<boolean>(false);
@@ -116,6 +118,15 @@ const Search = ({
     }
   };
 
+  const returnKorean = useCallback((value: 'address' | 'name' | 'tag') => {
+    if (value === 'address') {
+      return '주소';
+    } else if (value === 'name') {
+      return '이름';
+    } else if (value === 'tag') {
+      return '태그';
+    }
+  }, []);
   const onSubmit = async () => {
     setLoading(true);
     try {
@@ -176,8 +187,8 @@ const Search = ({
               size={10}
               color="#767677"
               style={{marginRight: 5}}></Icon>
-            <Text style={{fontSize: 10, color: 'black', paddingRight: 5}}>
-              {searchKey}
+            <Text style={{fontSize: 13, color: 'black', paddingRight: 5}}>
+              {returnKorean(searchKey)}
             </Text>
           </Pressable>
 
@@ -197,7 +208,7 @@ const Search = ({
             onPress={() => {
               goBack();
             }}>
-            <Text style={{fontSize: 10, color: '#767677', paddingRight: 10}}>
+            <Text style={{fontSize: 13, color: '#767677', paddingRight: 10}}>
               취소
             </Text>
           </Button>
@@ -233,21 +244,39 @@ const Search = ({
                 setSearchKey('name');
                 setPopup(false);
               }}>
-              <Text>이름</Text>
+              <Text
+                style={{
+                  fontWeight: searchKey === 'name' ? '600' : '300',
+                  color: searchKey === 'name' ? 'black' : 'gray',
+                }}>
+                이름
+              </Text>
             </PopupButtonBox>
             <PopupButtonBox
               onPress={() => {
                 setSearchKey('address');
                 setPopup(false);
               }}>
-              <Text>주소</Text>
+              <Text
+                style={{
+                  fontWeight: searchKey === 'address' ? '600' : '300',
+                  color: searchKey === 'address' ? 'black' : 'gray',
+                }}>
+                주소
+              </Text>
             </PopupButtonBox>
             <PopupButtonBox
               onPress={() => {
                 setSearchKey('tag');
                 setPopup(false);
               }}>
-              <Text>태그</Text>
+              <Text
+                style={{
+                  fontWeight: searchKey === 'tag' ? '600' : '300',
+                  color: searchKey === 'tag' ? 'black' : 'gray',
+                }}>
+                태그
+              </Text>
             </PopupButtonBox>
           </PopupButtonBoxWrapper>
         </Popup>

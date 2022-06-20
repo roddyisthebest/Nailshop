@@ -57,7 +57,7 @@ const Login = ({
       <LogoImage
         width={120}
         height={120}
-        source={require('../../assets/img/nailShopLogo.png')}
+        source={require('../../assets/img/logo.jpeg')}
       />
       <View>
         <Button

@@ -7,6 +7,7 @@ import MyStyle from '../screens/Stack/MyStyle';
 import MyReservation from '../screens/Stack/MyReservation';
 import Search from '../screens/Stack/Search';
 import {Text} from 'react-native';
+import Review from '../screens/Stack/Review';
 const NativeStack = createNativeStackNavigator();
 
 // stack에 해당되는 네비게이션 구조입니다. Edit,MyStore,MyStyle,MyReservation 페이지들이 이 네비게이션에 포함됩니다.
@@ -33,6 +34,7 @@ const Stack = () => (
       component={Search}
       options={{headerLeft: props => null}}
     />
+    <NativeStack.Screen name="Review" component={Review} />
   </NativeStack.Navigator>
 );
 

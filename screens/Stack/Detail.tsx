@@ -10,13 +10,15 @@ import {
   Share,
   Alert,
   ImageBackground,
+  Pressable,
+  StyleSheet,
 } from 'react-native';
 import React, {useCallback, useEffect, useState, useRef} from 'react';
 import styled from 'styled-components/native';
 import DropShadow from 'react-native-drop-shadow';
 import Icon from 'react-native-vector-icons/Ionicons';
 import NaverMapView, {Marker} from 'react-native-nmap';
-import {Shop, Style} from '../../types';
+import {ReviewType, Shop, Style} from '../../types';
 import {
   getShopByIdx,
   postLikeByIdx,
@@ -24,11 +26,13 @@ import {
   postReservation,
   postShopLike,
   deleteShopLike,
+  getReviews,
 } from '../../api/shop';
 import getTokenAndRefresh from '../../util/getToken';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {reset} from '../../store/slice';
 import {useDispatch} from 'react-redux';
+import ReviewBox from '../../components/ReviewBox';
 
 const Container = styled.ScrollView`
   flex: 1;
@@ -145,7 +149,7 @@ const SectionBar = styled.View`
 `;
 const SectionText = styled.Text`
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 700;
   color: black;
   margin-bottom: 20px;
 `;
@@ -201,6 +205,7 @@ const Detail = ({
   const [styleIndex, setStyleIndex] = useState<number>(0);
   const [render, setRender] = useState<boolean>(false);
 
+  const [review, setReview] = useState<ReviewType[]>();
   const shareShop = useCallback(async (name: string, url: string) => {
     try {
       await Share.share({
@@ -245,6 +250,7 @@ const Detail = ({
     } catch (e: any) {
       if (e.response.status === 401 && e.response.data.code === 'A0002') {
         const data = await getTokenAndRefresh();
+
         if (!data) {
           await EncryptedStorage.clear();
           dispatch(reset());
@@ -305,7 +311,6 @@ const Detail = ({
       try {
         const {data} = await postReservation(idx, type);
         console.log(data);
-        Alert.alert(`${type}을 이용한 예약이 완료되었습니다.`);
       } catch (e: any) {
         if (e.response.status === 401 && e.response.data.code === 'A0002') {
           const data = await getTokenAndRefresh();
@@ -323,8 +328,28 @@ const Detail = ({
     [],
   );
 
+  const getReviewData = useCallback(async () => {
+    try {
+      const {data} = await getReviews(0, 2, idx);
+      setReview(data.data.contents);
+    } catch (e: any) {
+      if (e.response.status === 401 && e.response.data.code === 'A0002') {
+        const data = await getTokenAndRefresh();
+        if (!data) {
+          await EncryptedStorage.clear();
+          dispatch(reset());
+        } else {
+          getReviewData();
+        }
+      } else {
+        Alert.alert('에러입니다. 다시 로그인해주세요.');
+      }
+    }
+  }, []);
+
   useEffect(() => {
     getData();
+    getReviewData();
   }, []);
 
   useEffect(() => {
@@ -340,7 +365,7 @@ const Detail = ({
     }
   }, [data]);
 
-  return data ? (
+  return data && review ? (
     <View style={{flex: 1}}>
       <Container>
         <DetailImage
@@ -435,7 +460,8 @@ const Detail = ({
                   tilt: 0,
                   latitude: data.latitude,
                   longitude: data.longitude,
-                }}>
+                }}
+                useTextureView={true}>
                 <Marker
                   coordinate={{
                     latitude: data.latitude,
@@ -504,6 +530,69 @@ const Detail = ({
           </Section>
           <SectionBar />
           <Section>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'flex-end',
+                marginBottom: 15,
+              }}>
+              <SectionText style={{marginBottom: 0}}> 리뷰</SectionText>
+              <Pressable
+                onPress={() => {
+                  navigate('Stacks', {
+                    screen: 'Review',
+                    params: {idx, bookedBefore: data.bookedBefore},
+                  });
+                }}>
+                <Text style={{fontSize: 10}}>더보기</Text>
+              </Pressable>
+            </View>
+            <View
+              style={{
+                width: '100%',
+                marginTop: 10,
+              }}>
+              <DropShadow
+                style={{
+                  shadowColor: '#171717',
+                  shadowOffset: {width: 0, height: 5},
+                  shadowOpacity: 0.1,
+                  shadowRadius: 2,
+                }}>
+                {review.length !== 0 ? (
+                  <View style={styles.reviewConainer}>
+                    {review.map((e, index) => {
+                      return (
+                        <ReviewBox
+                          key={index}
+                          name={e.user.email}
+                          score={e.score}
+                          content={e.content}
+                          idx={e.idx}
+                          userIdx={e.idx}
+                          isItPre={true}
+                          time={e.createdAt}
+                          isItLast={index + 1 === review.length}
+                          isItFirst={index === 0}></ReviewBox>
+                      );
+                    })}
+                  </View>
+                ) : (
+                  <View
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      height: 100,
+                    }}>
+                    <Text>등록된 리뷰가 없습니다.</Text>
+                  </View>
+                )}
+              </DropShadow>
+            </View>
+          </Section>
+          <SectionBar />
+          <Section>
             <SectionText>디자인 목록</SectionText>
             <View
               style={{
@@ -552,6 +641,9 @@ const Detail = ({
                     onPress={async () => {
                       await makeReservation('PHONE');
                       Linking.openURL(`tel:${phone}`);
+                      setTimeout(() => {
+                        Alert.alert(`phone을 이용한 예약이 완료되었습니다.`);
+                      }, 1);
                     }}>
                     <Icon name="call" size={20} color="black" />
                   </ContactButton>
@@ -559,6 +651,9 @@ const Detail = ({
                     onPress={async () => {
                       await makeReservation('MESSAGE');
                       Linking.openURL(`sms:${phone}`);
+                      setTimeout(() => {
+                        Alert.alert(`MESSAGE를 이용한 예약이 완료되었습니다.`);
+                      }, 1);
                     }}>
                     <Icon name="chatbubble-ellipses" size={20} color="black" />
                   </ContactButton>
@@ -569,6 +664,9 @@ const Detail = ({
                 onPress={async () => {
                   await makeReservation('KAKAO');
                   Linking.openURL(`https://open.kakao.com/o/sP3g8xLd`);
+                  setTimeout(() => {
+                    Alert.alert(`KAKAO톡을 이용한 예약이 완료되었습니다.`);
+                  }, 1);
                 }}>
                 <Image
                   style={{width: '50%', height: '50%'}}
@@ -614,5 +712,21 @@ const Detail = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  reviewConainer: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#F3F3F3',
+    borderRadius: 10,
+    backgroundColor: 'white',
+  },
+  title: {
+    fontSize: 32,
+  },
+});
 
 export default Detail;

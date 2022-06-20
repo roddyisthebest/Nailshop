@@ -52,6 +52,7 @@ const MyStyle = ({
         setData(data.concat(styleData.data.contents));
         setPage(page => page + 1);
       } catch (e: any) {
+        console.log(e.response.status);
         if (e.response.status === 401 && e.response.data.code === 'A0002') {
           const data = await getTokenAndRefresh();
           if (!data) {

@@ -25,6 +25,7 @@ export type Shop = {
   longitude: number;
   kakao: null;
   businessHours: number | null;
+  bookedBefore: boolean;
   shopMainImage: {
     idx: number;
     name: string;
@@ -61,4 +62,13 @@ export type UserInfo = {
   phone: string;
   oauth: 'KAKAO' | 'FACEBOOK' | 'GOOGLE';
   createdAt: any;
+};
+
+export type ReviewType = {
+  content: string;
+  createdAt: string;
+  idx: number;
+  score: number;
+  shop: Shop;
+  user: UserInfo;
 };

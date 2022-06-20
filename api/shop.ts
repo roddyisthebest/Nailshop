@@ -51,6 +51,23 @@ const deleteShopLike = (idx: number): Promise<AxiosResponse<any>> =>
 const getStyleList = (page: number): Promise<AxiosResponse<any>> =>
   api.get(`/shops/styles?page=${page}&size=10&like=false`);
 
+const getReviews = (
+  page: number,
+  size: number,
+  idx: number,
+): Promise<AxiosResponse<any>> =>
+  api.get(`/shops/${idx}/reviews?page=${page}&size=${size}`);
+
+const postReview = (
+  idx: number,
+  content: string,
+  score: number,
+): Promise<AxiosResponse<any>> =>
+  api.post(`/shops/${idx}/reviews`, {content, score});
+
+const deleteReview = (idx: number): Promise<AxiosResponse<any>> =>
+  api.delete(`/shops/reviews/${idx}`);
+
 export {
   getShopList,
   getShopRanking,
@@ -62,4 +79,7 @@ export {
   deleteShopLike,
   getStyleList,
   searchShopList,
+  getReviews,
+  postReview,
+  deleteReview,
 };
