@@ -139,7 +139,7 @@ const Home = ({
   useEffect(() => {
     setOptions({
       headerTitle: () => (
-        <View style={{paddingHorizontal: 0}}>
+        <View style={{paddingHorizontal: 0, justifyContent: 'center'}}>
           <SearchBar width={Dimensions.get('window').width - 30}></SearchBar>
         </View>
       ),
