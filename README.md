@@ -102,4 +102,15 @@
 <img src="https://user-images.githubusercontent.com/68287181/179445535-9526ca6a-fa30-40fd-8941-a2da99f5bcc0.png" width="40%" />
 </p>
 
+## 🛠 기술 스택 및 인프라
+
+![Group 105](https://user-images.githubusercontent.com/68287181/179447764-364c2390-1517-4a5d-b658-1f613ab9e5f0.png)
+
+
+## Back-end 
+
+Postman API 문서 https://documenter.getpostman.com/view/16333586/Uz5NjYtg
+
+
+
 
